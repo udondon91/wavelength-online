@@ -586,8 +586,8 @@ function init() {
   });
 
   // Back to lobby / Leave
-  $("#btn-back-lobby").addEventListener("click", () => window.location.reload());
-  $("#btn-leave-lobby").addEventListener("click", () => window.location.reload());
+  $("#btn-back-lobby").addEventListener("click", () => window.location.href = "/");
+  $("#btn-leave-lobby").addEventListener("click", () => window.location.href = "/");
 
   // Rules
   $("#btn-rules").addEventListener("click", () => $("#modal-rules").classList.add("active"));
