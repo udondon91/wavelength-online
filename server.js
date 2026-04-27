@@ -1,8 +1,10 @@
 // ===== Wavelength Online - WebSocket Server (Left/Right Rules) =====
+require("dotenv").config();
 const http = require("http");
 const fs = require("fs");
 const path = require("path");
 const { WebSocketServer } = require("ws");
+const { MongoClient } = require("mongodb");
 
 const PORT = process.env.PORT || 3000;
 
@@ -14,6 +16,23 @@ const TOPICS = JSON.parse(rawTopics);
 const rooms = new Map();
 const globalUsers = new Map(); // userId -> { ws, name, avatar, friendCode, currentRoom }
 const friendCodeToUserId = new Map(); // friendCode -> userId
+
+// --- MongoDB Initialization ---
+let db, usersCollection;
+async function initDB() {
+  try {
+    const uri = process.env.MONGO_URI;
+    if (!uri) throw new Error("MONGO_URI is not set!");
+    const client = new MongoClient(uri);
+    await client.connect();
+    db = client.db("wavelength");
+    usersCollection = db.collection("users");
+    console.log("Connected to MongoDB!");
+  } catch (e) {
+    console.error("MongoDB connection error:", e);
+  }
+}
+initDB();
 
 function generateCode() {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ";
@@ -70,19 +89,64 @@ wss.on("connection", (ws) => {
   ws._userId = null;
   ws._roomCode = null;
 
-  ws.on("message", (raw) => {
+  ws.on("message", async (raw) => {
     let msg;
     try { msg = JSON.parse(raw); } catch { return; }
-    handleMessage(ws, msg);
+    await handleMessage(ws, msg);
   });
 
-  ws.on("close", () => handleDisconnect(ws, playerId));
+  ws.on("close", () => handleDisconnect(ws, ws._userId));
 });
 
+async function handleMessage(ws, msg) {
+  switch (msg.type) {
     case "register": {
       ws._userId = msg.userId;
       globalUsers.set(msg.userId, { ws, name: msg.name, avatar: msg.avatar, friendCode: msg.friendCode, currentRoom: null });
       if (msg.friendCode) friendCodeToUserId.set(msg.friendCode, msg.userId);
+
+      if (usersCollection) {
+        let user = await usersCollection.findOne({ userId: msg.userId });
+        if (!user) {
+          user = {
+            userId: msg.userId, name: msg.name, avatar: msg.avatar, friendCode: msg.friendCode,
+            stats: {
+              "直感": { earned: 0, max: 0 }, "感情": { earned: 0, max: 0 },
+              "抽象": { earned: 0, max: 0 }, "知識": { earned: 0, max: 0 },
+              "評価軸": { earned: 0, max: 0 }, "文脈依存": { earned: 0, max: 0 }
+            },
+            friends: []
+          };
+          await usersCollection.insertOne(user);
+        } else {
+          if (user.name !== msg.name || user.avatar !== msg.avatar) {
+             await usersCollection.updateOne({ userId: msg.userId }, { $set: { name: msg.name, avatar: msg.avatar } });
+          }
+        }
+        sendTo(ws, { type: "account_info", stats: user.stats, friends: user.friends });
+      }
+      break;
+    }
+
+    case "restore_account": {
+      if (usersCollection) {
+         const user = await usersCollection.findOne({ friendCode: msg.friendCode });
+         if (user) {
+            sendTo(ws, { type: "restore_success", account: { userId: user.userId, name: user.name, avatar: user.avatar, friendCode: user.friendCode }, stats: user.stats, friends: user.friends });
+         } else {
+            sendTo(ws, { type: "error", message: "アカウントが見つかりません" });
+         }
+      }
+      break;
+    }
+
+    case "add_friend": {
+      if (usersCollection && ws._userId) {
+        await usersCollection.updateOne(
+          { userId: ws._userId },
+          { $addToSet: { friends: { friendCode: msg.friendCode, name: msg.friendName } } }
+        );
+      }
       break;
     }
 
@@ -375,6 +439,33 @@ function showRoundResult(room) {
     turnInRound: turnInRound, totalPlayers: room.players.length,
     isLastRound: isLastTurnOfGame, host: room.host
   });
+
+  // DB Update for Stats
+  if (usersCollection) {
+    const type = room.topic.type;
+    const maxMain = Math.round(100 * room.topic.multiplier);
+    const maxOther = Math.round(30 * room.topic.multiplier);
+
+    const updates = [];
+    for (const [pid, sData] of Object.entries(scores)) {
+       let e = sData.score;
+       let m = (sData.role === "other") ? maxOther : maxMain;
+       updates.push({
+         updateOne: {
+           filter: { userId: pid },
+           update: { 
+             $inc: { 
+               [`stats.${type}.earned`]: e,
+               [`stats.${type}.max`]: m 
+             } 
+           }
+         }
+       });
+    }
+    if (updates.length > 0) {
+       usersCollection.bulkWrite(updates).catch(console.error);
+    }
+  }
 }
 
 function handleDisconnect(ws, playerId) {

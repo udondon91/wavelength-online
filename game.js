@@ -212,6 +212,15 @@ function handleServerMessage(msg) {
     case "player_list":
       updateLobby(msg.players, msg.host);
       break;
+      
+    case "account_info":
+      stats = msg.stats || stats;
+      friends = msg.friends || friends;
+      saveStats();
+      saveFriends();
+      if ($("#modal-profile").classList.contains("active")) renderRadarChart();
+      if ($("#modal-friends").classList.contains("active")) renderFriendsList();
+      break;
 
     case "invite_received":
       $("#invite-from-avatar").textContent = msg.fromAvatar;
@@ -582,6 +591,35 @@ function init() {
       connectGlobal();
       initHome();
     });
+
+    $("#btn-restore").addEventListener("click", () => {
+      const code = $("#reg-restore-code").value.trim().toUpperCase();
+      if(code) {
+        $("#btn-restore").disabled = true;
+        $("#btn-restore").textContent = "検索中...";
+        const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+        const tempWs = new WebSocket(`${protocol}//${window.location.host}`);
+        tempWs.onopen = () => tempWs.send(JSON.stringify({ type: "restore_account", friendCode: code }));
+        tempWs.onmessage = (e) => {
+          const res = JSON.parse(e.data);
+          if (res.type === "restore_success") {
+            account = res.account;
+            stats = res.stats;
+            friends = res.friends;
+            saveAccount(); saveStats(); saveFriends();
+            tempWs.close();
+            showToast("アカウントを復元しました！");
+            connectGlobal();
+            initHome();
+          } else if (res.type === "error") {
+            showToast(res.message);
+            $("#btn-restore").disabled = false;
+            $("#btn-restore").textContent = "復元";
+            tempWs.close();
+          }
+        };
+      }
+    });
   } else {
     connectGlobal();
     initHome();
@@ -654,9 +692,11 @@ function initHome() {
   $("#btn-add-friend").addEventListener("click", () => {
     const code = $("#input-friend-code").value.trim().toUpperCase();
     if (code && code !== account.friendCode && !friends.find(f => f.friendCode === code)) {
-      friends.push({ friendCode: code, name: `フレンド(${code})` }); // Name will be updated on invite
+      const newFriend = { friendCode: code, name: `フレンド(${code})` };
+      friends.push(newFriend);
       saveFriends();
       renderFriendsList();
+      sendMsg({ type: "add_friend", friendCode: code, friendName: newFriend.name });
       $("#input-friend-code").value = "";
       showToast("フレンドを追加しました！");
     }
