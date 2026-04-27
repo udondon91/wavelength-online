@@ -55,7 +55,14 @@ h3{font-size:1.1rem;font-weight:600;color:var(--text-secondary)}
 .input-field:focus{border-color:var(--accent-blue);box-shadow:0 0 0 3px rgba(78,124,255,0.15)}
 .input-field::placeholder{color:rgba(255,255,255,0.25)}
 
-/* ===== Spectrum Display ===== */
+/* ===== Spectrum Display & Topic Meta ===== */
+.topic-meta{display:flex;justify-content:center;gap:8px}
+.diff-badge{padding:4px 10px;border-radius:12px;font-size:0.75rem;font-weight:800;letter-spacing:1px}
+.diff-badge.EASY{background:rgba(0,230,118,0.15);color:var(--accent-green);border:1px solid rgba(0,230,118,0.3)}
+.diff-badge.NORMAL{background:rgba(255,145,0,0.15);color:var(--accent-orange);border:1px solid rgba(255,145,0,0.3)}
+.diff-badge.HARD{background:rgba(255,78,163,0.15);color:var(--accent-pink);border:1px solid rgba(255,78,163,0.3)}
+.mult-badge{padding:4px 10px;border-radius:12px;font-size:0.75rem;font-weight:700;background:var(--bg-glass);color:var(--text-primary);border:1px solid rgba(255,255,255,0.1)}
+
 .spectrum-container{width:100%;margin:16px 0}
 .spectrum-labels{display:flex;justify-content:space-between;margin-bottom:10px;font-weight:700;font-size:0.95rem}
 .spectrum-left{color:#ff4e50}

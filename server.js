@@ -7,20 +7,8 @@ const { WebSocketServer } = require("ws");
 const PORT = process.env.PORT || 3000;
 
 // --- TOPICS ---
-const TOPICS = [
-  ["熱い 🔥","冷たい ❄️"],["甘い 🍬","苦い 💊"],["速い 🏎️","遅い 🐢"],
-  ["大きい 🐘","小さい 🐜"],["明るい ☀️","暗い 🌙"],["うるさい 📢","静か 🤫"],
-  ["高い ⬆️","低い ⬇️"],["硬い 🪨","柔らかい 🧸"],["古い 📜","新しい ✨"],
-  ["重い 🏋️","軽い 🪶"],["危険 ⚠️","安全 🛡️"],["有名 🌟","無名 👤"],
-  ["美しい 🌹","醜い 👹"],["楽しい 🎉","つまらない 😐"],["簡単 ✅","難しい 🧩"],
-  ["贅沢 💎","質素 🍚"],["リアル 📷","ファンタジー 🧙"],["都会 🏙️","田舎 🌾"],
-  ["過大評価 📈","過小評価 📉"],["健康的 🥗","不健康 🍔"],["かわいい 🐱","かっこいい 🐺"],
-  ["朝型 🌅","夜型 🦉"],["インドア 🏠","アウトドア ⛰️"],["天才 🧠","努力家 💪"],
-  ["未来的 🚀","レトロ 📻"],["平和 🕊️","戦争 ⚔️"],["おしゃれ 👗","ダサい 🧦"],
-  ["正義 ⚖️","悪 😈"],["現実的 📊","理想的 🌈"],["陽キャ 🌞","陰キャ 🌚"],
-  ["丸い ⭕","四角い 🟥"],["速攻 ⚡","じっくり 🧘"],["甘口 🍯","辛口 🌶️"],
-  ["夏っぽい 🏖️","冬っぽい ⛄"],["大人向け 🍷","子供向け 🧃"],
-];
+const rawTopics = fs.readFileSync(path.join(__dirname, "topics.json"), "utf-8");
+const TOPICS = JSON.parse(rawTopics);
 
 // --- Room Management ---
 const rooms = new Map();
@@ -43,13 +31,7 @@ function pickTopic(room) {
   return TOPICS[idx];
 }
 
-function calcMainScore(diff) {
-  if (diff <= 2) return 4;
-  if (diff <= 5) return 3;
-  if (diff <= 10) return 2;
-  if (diff <= 20) return 1;
-  return 0;
-}
+// function calcMainScore(diff) removed as we now calculate inline
 
 function broadcast(room, msg) {
   const data = JSON.stringify(msg);
@@ -158,7 +140,10 @@ function handleMessage(ws, playerId, msg) {
       const turnInRound = ((room.turn - 1) % room.players.length) + 1;
       broadcast(room, {
         type: "main_guess_phase",
-        topic: room.topic, hint: room.hint, 
+        topic: [room.topic.left, room.topic.right],
+        difficulty: room.topic.difficulty,
+        multiplier: room.topic.multiplier,
+        hint: room.hint, 
         round: room.round, maxRounds: room.maxRounds,
         turnInRound: turnInRound, totalPlayers: room.players.length,
         hinterId: hinter.id, hinterName: hinter.name,
@@ -182,7 +167,10 @@ function handleMessage(ws, playerId, msg) {
         broadcast(room, {
           type: "lr_guess_phase",
           mainGuess: room.mainGuess,
-          topic: room.topic, hint: room.hint, 
+          topic: [room.topic.left, room.topic.right],
+          difficulty: room.topic.difficulty,
+          multiplier: room.topic.multiplier,
+          hint: room.hint, 
           round: room.round, maxRounds: room.maxRounds,
           turnInRound: turnInRound, totalPlayers: room.players.length,
           hinterId: room.players[room.hinterIndex % room.players.length].id,
@@ -221,7 +209,13 @@ function handleMessage(ws, playerId, msg) {
       room.topic = pickTopic(room);
       room.target = Math.floor(Math.random() * 101);
       room.players.forEach(p => {
-        sendTo(p.ws, { type: "topic_updated", topic: room.topic, target: p.id === hinter.id ? room.target : null });
+        sendTo(p.ws, { 
+          type: "topic_updated", 
+          topic: [room.topic.left, room.topic.right],
+          difficulty: room.topic.difficulty,
+          multiplier: room.topic.multiplier,
+          target: p.id === hinter.id ? room.target : null 
+        });
       });
       break;
     }
@@ -277,7 +271,9 @@ function startNextRound(room) {
   room.players.forEach(p => {
     sendTo(p.ws, {
       type: "hint_phase",
-      topic: room.topic,
+      topic: [room.topic.left, room.topic.right],
+      difficulty: room.topic.difficulty,
+      multiplier: room.topic.multiplier,
       target: p.id === hinter.id ? room.target : null,
       hinterName: hinter.name,
       mainGuesserName: mainGuesser.name,
@@ -294,8 +290,9 @@ function showRoundResult(room) {
   const mainGuesser = room.players[room.mainGuesserIndex % room.players.length];
 
   const diff = Math.abs(room.mainGuess - room.target);
-  const mainScore = calcMainScore(diff);
-  const isPerfect = (mainScore === 4);
+  const baseScore = 100 - diff;
+  const mainScore = Math.round(baseScore * room.topic.multiplier);
+  const isPerfect = (diff === 0);
 
   const scores = {}; // pid -> { guess, score, type, role, lrp }
   const playerNames = {};
@@ -316,7 +313,7 @@ function showRoundResult(room) {
         const correctSide = room.target < room.mainGuess ? "left" : "right";
         
         if (!isPerfect && voted === correctSide && room.target !== room.mainGuess) {
-          pts = 1;
+          pts = Math.round(30 * room.topic.multiplier);
         }
         room.totalScores[p.id] += pts;
         scores[p.id] = { role: "other", score: pts, voted, correctSide, isPerfect };
@@ -328,12 +325,16 @@ function showRoundResult(room) {
   const isLastTurnOfGame = (room.round === room.maxRounds && turnInRound === room.players.length);
 
   room.history.push({
-    round: room.round, turn: turnInRound, topic: room.topic, target: room.target, hint: room.hint,
+    round: room.round, turn: turnInRound, topic: [room.topic.left, room.topic.right], target: room.target, hint: room.hint,
     mainGuess: room.mainGuess, scores, playerNames
   });
 
   broadcast(room, {
-    type: "round_result", target: room.target, topic: room.topic, hint: room.hint,
+    type: "round_result", target: room.target, 
+    topic: [room.topic.left, room.topic.right], 
+    difficulty: room.topic.difficulty,
+    multiplier: room.topic.multiplier,
+    hint: room.hint,
     mainGuess: room.mainGuess, scores, totalScores: room.totalScores, playerNames,
     hinterId: hinter.id, mainGuesserId: mainGuesser.id,
     round: room.round, maxRounds: room.maxRounds,

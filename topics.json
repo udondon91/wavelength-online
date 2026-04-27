@@ -1,0 +1,1202 @@
+[
+  {
+    "left": "冷たい",
+    "right": "熱い",
+    "format": "word",
+    "difficulty": "EASY",
+    "type": "直感",
+    "multiplier": 1
+  },
+  {
+    "left": "小さい",
+    "right": "大きい",
+    "format": "word",
+    "difficulty": "EASY",
+    "type": "直感",
+    "multiplier": 1
+  },
+  {
+    "left": "低い",
+    "right": "高い",
+    "format": "word",
+    "difficulty": "EASY",
+    "type": "直感",
+    "multiplier": 1
+  },
+  {
+    "left": "遅い",
+    "right": "速い",
+    "format": "word",
+    "difficulty": "EASY",
+    "type": "直感",
+    "multiplier": 1
+  },
+  {
+    "left": "暗い",
+    "right": "明るい",
+    "format": "word",
+    "difficulty": "EASY",
+    "type": "直感",
+    "multiplier": 1
+  },
+  {
+    "left": "苦い",
+    "right": "甘い",
+    "format": "word",
+    "difficulty": "EASY",
+    "type": "直感",
+    "multiplier": 1
+  },
+  {
+    "left": "軽い",
+    "right": "重い",
+    "format": "word",
+    "difficulty": "EASY",
+    "type": "直感",
+    "multiplier": 1
+  },
+  {
+    "left": "静か",
+    "right": "うるさい",
+    "format": "word",
+    "difficulty": "EASY",
+    "type": "直感",
+    "multiplier": 1
+  },
+  {
+    "left": "弱い",
+    "right": "強い",
+    "format": "word",
+    "difficulty": "EASY",
+    "type": "直感",
+    "multiplier": 1
+  },
+  {
+    "left": "柔らかい",
+    "right": "硬い",
+    "format": "word",
+    "difficulty": "EASY",
+    "type": "直感",
+    "multiplier": 1
+  },
+  {
+    "left": "悲しい",
+    "right": "嬉しい",
+    "format": "word",
+    "difficulty": "EASY",
+    "type": "感情",
+    "multiplier": 1
+  },
+  {
+    "left": "退屈",
+    "right": "楽しい",
+    "format": "word",
+    "difficulty": "EASY",
+    "type": "感情",
+    "multiplier": 1
+  },
+  {
+    "left": "嫌い",
+    "right": "好き",
+    "format": "word",
+    "difficulty": "EASY",
+    "type": "感情",
+    "multiplier": 1
+  },
+  {
+    "left": "怖い",
+    "right": "安心",
+    "format": "word",
+    "difficulty": "EASY",
+    "type": "感情",
+    "multiplier": 1
+  },
+  {
+    "left": "怒り",
+    "right": "喜び",
+    "format": "word",
+    "difficulty": "EASY",
+    "type": "感情",
+    "multiplier": 1
+  },
+  {
+    "left": "不安",
+    "right": "自信",
+    "format": "word",
+    "difficulty": "EASY",
+    "type": "感情",
+    "multiplier": 1
+  },
+  {
+    "left": "不味い",
+    "right": "美味しい",
+    "format": "word",
+    "difficulty": "EASY",
+    "type": "直感",
+    "multiplier": 1
+  },
+  {
+    "left": "絶望",
+    "right": "希望",
+    "format": "word",
+    "difficulty": "EASY",
+    "type": "感情",
+    "multiplier": 1
+  },
+  {
+    "left": "敵",
+    "right": "味方",
+    "format": "word",
+    "difficulty": "EASY",
+    "type": "感情",
+    "multiplier": 1
+  },
+  {
+    "left": "嘘",
+    "right": "真実",
+    "format": "word",
+    "difficulty": "EASY",
+    "type": "抽象",
+    "multiplier": 1
+  },
+  {
+    "left": "貧困",
+    "right": "裕福",
+    "format": "word",
+    "difficulty": "NORMAL",
+    "type": "評価軸",
+    "multiplier": 1.3
+  },
+  {
+    "left": "無名",
+    "right": "有名",
+    "format": "word",
+    "difficulty": "NORMAL",
+    "type": "評価軸",
+    "multiplier": 1.3
+  },
+  {
+    "left": "ダサい",
+    "right": "おしゃれ",
+    "format": "word",
+    "difficulty": "NORMAL",
+    "type": "評価軸",
+    "multiplier": 1.3
+  },
+  {
+    "left": "不健康",
+    "right": "健康的",
+    "format": "word",
+    "difficulty": "NORMAL",
+    "type": "評価軸",
+    "multiplier": 1.3
+  },
+  {
+    "left": "汚い",
+    "right": "美しい",
+    "format": "word",
+    "difficulty": "NORMAL",
+    "type": "評価軸",
+    "multiplier": 1.3
+  },
+  {
+    "left": "安っぽい",
+    "right": "高級",
+    "format": "word",
+    "difficulty": "NORMAL",
+    "type": "評価軸",
+    "multiplier": 1.3
+  },
+  {
+    "left": "平凡",
+    "right": "天才",
+    "format": "word",
+    "difficulty": "NORMAL",
+    "type": "評価軸",
+    "multiplier": 1.3
+  },
+  {
+    "left": "無駄",
+    "right": "有用",
+    "format": "word",
+    "difficulty": "NORMAL",
+    "type": "評価軸",
+    "multiplier": 1.3
+  },
+  {
+    "left": "悪",
+    "right": "正義",
+    "format": "word",
+    "difficulty": "NORMAL",
+    "type": "評価軸",
+    "multiplier": 1.3
+  },
+  {
+    "left": "不便",
+    "right": "便利",
+    "format": "word",
+    "difficulty": "NORMAL",
+    "type": "評価軸",
+    "multiplier": 1.3
+  },
+  {
+    "left": "田舎",
+    "right": "都会",
+    "format": "word",
+    "difficulty": "NORMAL",
+    "type": "文脈依存",
+    "multiplier": 1.3
+  },
+  {
+    "left": "子供",
+    "right": "大人",
+    "format": "word",
+    "difficulty": "NORMAL",
+    "type": "文脈依存",
+    "multiplier": 1.3
+  },
+  {
+    "left": "インドア",
+    "right": "アウトドア",
+    "format": "word",
+    "difficulty": "NORMAL",
+    "type": "文脈依存",
+    "multiplier": 1.3
+  },
+  {
+    "left": "アナログ",
+    "right": "デジタル",
+    "format": "word",
+    "difficulty": "NORMAL",
+    "type": "文脈依存",
+    "multiplier": 1.3
+  },
+  {
+    "left": "和風",
+    "right": "洋風",
+    "format": "word",
+    "difficulty": "NORMAL",
+    "type": "文脈依存",
+    "multiplier": 1.3
+  },
+  {
+    "left": "日常",
+    "right": "非日常",
+    "format": "word",
+    "difficulty": "NORMAL",
+    "type": "文脈依存",
+    "multiplier": 1.3
+  },
+  {
+    "left": "陰キャ",
+    "right": "陽キャ",
+    "format": "word",
+    "difficulty": "NORMAL",
+    "type": "文脈依存",
+    "multiplier": 1.3
+  },
+  {
+    "left": "保守的",
+    "right": "革新的",
+    "format": "word",
+    "difficulty": "NORMAL",
+    "type": "文脈依存",
+    "multiplier": 1.3
+  },
+  {
+    "left": "質素",
+    "right": "贅沢",
+    "format": "word",
+    "difficulty": "NORMAL",
+    "type": "文脈依存",
+    "multiplier": 1.3
+  },
+  {
+    "left": "四角い",
+    "right": "丸い",
+    "format": "word",
+    "difficulty": "NORMAL",
+    "type": "直感",
+    "multiplier": 1.2
+  },
+  {
+    "left": "短い",
+    "right": "長い",
+    "format": "word",
+    "difficulty": "NORMAL",
+    "type": "直感",
+    "multiplier": 1.2
+  },
+  {
+    "left": "乾いた",
+    "right": "濡れた",
+    "format": "word",
+    "difficulty": "NORMAL",
+    "type": "直感",
+    "multiplier": 1.2
+  },
+  {
+    "left": "薄い",
+    "right": "濃い",
+    "format": "word",
+    "difficulty": "NORMAL",
+    "type": "直感",
+    "multiplier": 1.2
+  },
+  {
+    "left": "冷酷",
+    "right": "温厚",
+    "format": "word",
+    "difficulty": "NORMAL",
+    "type": "感情",
+    "multiplier": 1.2
+  },
+  {
+    "left": "孤独",
+    "right": "連帯",
+    "format": "word",
+    "difficulty": "NORMAL",
+    "type": "感情",
+    "multiplier": 1.2
+  },
+  {
+    "left": "後悔",
+    "right": "満足",
+    "format": "word",
+    "difficulty": "NORMAL",
+    "type": "感情",
+    "multiplier": 1.2
+  },
+  {
+    "left": "緊張",
+    "right": "リラックス",
+    "format": "word",
+    "difficulty": "NORMAL",
+    "type": "感情",
+    "multiplier": 1.2
+  },
+  {
+    "left": "偶然",
+    "right": "必然",
+    "format": "word",
+    "difficulty": "NORMAL",
+    "type": "抽象",
+    "multiplier": 1.2
+  },
+  {
+    "left": "混沌",
+    "right": "秩序",
+    "format": "word",
+    "difficulty": "NORMAL",
+    "type": "抽象",
+    "multiplier": 1.2
+  },
+  {
+    "left": "現実",
+    "right": "理想",
+    "format": "word",
+    "difficulty": "NORMAL",
+    "type": "抽象",
+    "multiplier": 1.2
+  },
+  {
+    "left": "部分",
+    "right": "全体",
+    "format": "word",
+    "difficulty": "NORMAL",
+    "type": "抽象",
+    "multiplier": 1.2
+  },
+  {
+    "left": "理系",
+    "right": "文系",
+    "format": "word",
+    "difficulty": "NORMAL",
+    "type": "知識",
+    "multiplier": 1.2
+  },
+  {
+    "left": "初心者",
+    "right": "玄人",
+    "format": "word",
+    "difficulty": "NORMAL",
+    "type": "評価軸",
+    "multiplier": 1.3
+  },
+  {
+    "left": "不器用",
+    "right": "器用",
+    "format": "word",
+    "difficulty": "NORMAL",
+    "type": "評価軸",
+    "multiplier": 1.3
+  },
+  {
+    "left": "浪費",
+    "right": "節約",
+    "format": "word",
+    "difficulty": "NORMAL",
+    "type": "評価軸",
+    "multiplier": 1.3
+  },
+  {
+    "left": "過小評価",
+    "right": "過大評価",
+    "format": "word",
+    "difficulty": "HARD",
+    "type": "評価軸",
+    "multiplier": 1.6
+  },
+  {
+    "left": "偽物",
+    "right": "本物",
+    "format": "word",
+    "difficulty": "HARD",
+    "type": "評価軸",
+    "multiplier": 1.6
+  },
+  {
+    "left": "有害",
+    "right": "無害",
+    "format": "word",
+    "difficulty": "HARD",
+    "type": "評価軸",
+    "multiplier": 1.6
+  },
+  {
+    "left": "短期的",
+    "right": "長期的",
+    "format": "word",
+    "difficulty": "HARD",
+    "type": "評価軸",
+    "multiplier": 1.6
+  },
+  {
+    "left": "主観的",
+    "right": "客観的",
+    "format": "word",
+    "difficulty": "HARD",
+    "type": "評価軸",
+    "multiplier": 1.6
+  },
+  {
+    "left": "感情的",
+    "right": "論理的",
+    "format": "word",
+    "difficulty": "HARD",
+    "type": "評価軸",
+    "multiplier": 1.6
+  },
+  {
+    "left": "大衆的",
+    "right": "カルト的",
+    "format": "word",
+    "difficulty": "HARD",
+    "type": "文脈依存",
+    "multiplier": 1.6
+  },
+  {
+    "left": "妥協",
+    "right": "完璧",
+    "format": "word",
+    "difficulty": "HARD",
+    "type": "文脈依存",
+    "multiplier": 1.6
+  },
+  {
+    "left": "形式的",
+    "right": "実質的",
+    "format": "word",
+    "difficulty": "HARD",
+    "type": "文脈依存",
+    "multiplier": 1.6
+  },
+  {
+    "left": "過程",
+    "right": "結果",
+    "format": "word",
+    "difficulty": "HARD",
+    "type": "文脈依存",
+    "multiplier": 1.6
+  },
+  {
+    "left": "自由",
+    "right": "規律",
+    "format": "word",
+    "difficulty": "HARD",
+    "type": "文脈依存",
+    "multiplier": 1.6
+  },
+  {
+    "left": "微視的",
+    "right": "巨視的",
+    "format": "word",
+    "difficulty": "HARD",
+    "type": "抽象",
+    "multiplier": 1.5
+  },
+  {
+    "left": "相対的",
+    "right": "絶対的",
+    "format": "word",
+    "difficulty": "HARD",
+    "type": "抽象",
+    "multiplier": 1.5
+  },
+  {
+    "left": "静的",
+    "right": "動的",
+    "format": "word",
+    "difficulty": "HARD",
+    "type": "抽象",
+    "multiplier": 1.5
+  },
+  {
+    "left": "分離",
+    "right": "統合",
+    "format": "word",
+    "difficulty": "HARD",
+    "type": "抽象",
+    "multiplier": 1.5
+  },
+  {
+    "left": "偶然性",
+    "right": "再現性",
+    "format": "word",
+    "difficulty": "HARD",
+    "type": "知識",
+    "multiplier": 1.5
+  },
+  {
+    "left": "帰納的",
+    "right": "演繹的",
+    "format": "word",
+    "difficulty": "HARD",
+    "type": "知識",
+    "multiplier": 1.5
+  },
+  {
+    "left": "消費",
+    "right": "生産",
+    "format": "word",
+    "difficulty": "HARD",
+    "type": "知識",
+    "multiplier": 1.5
+  },
+  {
+    "left": "ニッチ",
+    "right": "メジャー",
+    "format": "word",
+    "difficulty": "HARD",
+    "type": "文脈依存",
+    "multiplier": 1.6
+  },
+  {
+    "left": "表層的",
+    "right": "深層的",
+    "format": "word",
+    "difficulty": "HARD",
+    "type": "抽象",
+    "multiplier": 1.5
+  },
+  {
+    "left": "絶対に食べたくない",
+    "right": "毎日でも食べたい",
+    "format": "sentence",
+    "difficulty": "EASY",
+    "type": "感情",
+    "multiplier": 1
+  },
+  {
+    "left": "全く似合わない",
+    "right": "完璧に似合っている",
+    "format": "sentence",
+    "difficulty": "EASY",
+    "type": "感情",
+    "multiplier": 1
+  },
+  {
+    "left": "絶対にやりたくない仕事",
+    "right": "誰もが憧れる仕事",
+    "format": "sentence",
+    "difficulty": "EASY",
+    "type": "感情",
+    "multiplier": 1
+  },
+  {
+    "left": "すぐに捨てたい",
+    "right": "一生大切にしたい",
+    "format": "sentence",
+    "difficulty": "EASY",
+    "type": "感情",
+    "multiplier": 1
+  },
+  {
+    "left": "とても退屈な休日の過ごし方",
+    "right": "最高の休日の過ごし方",
+    "format": "sentence",
+    "difficulty": "EASY",
+    "type": "感情",
+    "multiplier": 1
+  },
+  {
+    "left": "全く役に立たない能力",
+    "right": "喉から手が出るほど欲しい能力",
+    "format": "sentence",
+    "difficulty": "EASY",
+    "type": "知識",
+    "multiplier": 1
+  },
+  {
+    "left": "最悪のプレゼント",
+    "right": "最高のプレゼント",
+    "format": "sentence",
+    "difficulty": "EASY",
+    "type": "感情",
+    "multiplier": 1
+  },
+  {
+    "left": "誰も住みたくない街",
+    "right": "誰もが住みたい街",
+    "format": "sentence",
+    "difficulty": "EASY",
+    "type": "直感",
+    "multiplier": 1
+  },
+  {
+    "left": "時代遅れのデザイン",
+    "right": "最先端のデザイン",
+    "format": "sentence",
+    "difficulty": "EASY",
+    "type": "評価軸",
+    "multiplier": 1
+  },
+  {
+    "left": "ダサい名前",
+    "right": "かっこいい名前",
+    "format": "sentence",
+    "difficulty": "EASY",
+    "type": "感情",
+    "multiplier": 1
+  },
+  {
+    "left": "つまらない映画",
+    "right": "泣ける名作映画",
+    "format": "sentence",
+    "difficulty": "EASY",
+    "type": "感情",
+    "multiplier": 1
+  },
+  {
+    "left": "不気味なキャラクター",
+    "right": "愛されるマスコット",
+    "format": "sentence",
+    "difficulty": "EASY",
+    "type": "感情",
+    "multiplier": 1
+  },
+  {
+    "left": "最悪の罰ゲーム",
+    "right": "最高のサプライズ",
+    "format": "sentence",
+    "difficulty": "EASY",
+    "type": "感情",
+    "multiplier": 1
+  },
+  {
+    "left": "読みにくい文章",
+    "right": "心に響く名文",
+    "format": "sentence",
+    "difficulty": "EASY",
+    "type": "感情",
+    "multiplier": 1
+  },
+  {
+    "left": "聞いていて疲れる声",
+    "right": "癒やされる声",
+    "format": "sentence",
+    "difficulty": "EASY",
+    "type": "感情",
+    "multiplier": 1
+  },
+  {
+    "left": "使い勝手が悪い道具",
+    "right": "手放せない便利グッズ",
+    "format": "sentence",
+    "difficulty": "EASY",
+    "type": "評価軸",
+    "multiplier": 1
+  },
+  {
+    "left": "絶対に秘密にしたいこと",
+    "right": "みんなに自慢したいこと",
+    "format": "sentence",
+    "difficulty": "EASY",
+    "type": "感情",
+    "multiplier": 1
+  },
+  {
+    "left": "最悪の旅行先",
+    "right": "人生で一度は行くべき場所",
+    "format": "sentence",
+    "difficulty": "EASY",
+    "type": "感情",
+    "multiplier": 1
+  },
+  {
+    "left": "誰も買わない商品",
+    "right": "即完売する大ヒット商品",
+    "format": "sentence",
+    "difficulty": "EASY",
+    "type": "知識",
+    "multiplier": 1
+  },
+  {
+    "left": "絶対に笑えない冗談",
+    "right": "腹を抱えて笑うジョーク",
+    "format": "sentence",
+    "difficulty": "EASY",
+    "type": "感情",
+    "multiplier": 1
+  },
+  {
+    "left": "歴史に悪名を残した人物",
+    "right": "歴史に名を残した偉人",
+    "format": "sentence",
+    "difficulty": "NORMAL",
+    "type": "知識",
+    "multiplier": 1.2
+  },
+  {
+    "left": "お金の無駄遣い",
+    "right": "素晴らしい投資",
+    "format": "sentence",
+    "difficulty": "NORMAL",
+    "type": "評価軸",
+    "multiplier": 1.3
+  },
+  {
+    "left": "友達にはなれないタイプ",
+    "right": "親友になりたいタイプ",
+    "format": "sentence",
+    "difficulty": "NORMAL",
+    "type": "感情",
+    "multiplier": 1.2
+  },
+  {
+    "left": "絶対に流行らない",
+    "right": "社会現象になる",
+    "format": "sentence",
+    "difficulty": "NORMAL",
+    "type": "評価軸",
+    "multiplier": 1.3
+  },
+  {
+    "left": "子供には見せられない",
+    "right": "情操教育に良い",
+    "format": "sentence",
+    "difficulty": "NORMAL",
+    "type": "文脈依存",
+    "multiplier": 1.3
+  },
+  {
+    "left": "マナー違反",
+    "right": "素晴らしい気遣い",
+    "format": "sentence",
+    "difficulty": "NORMAL",
+    "type": "文脈依存",
+    "multiplier": 1.3
+  },
+  {
+    "left": "無能な上司の特徴",
+    "right": "理想のリーダー像",
+    "format": "sentence",
+    "difficulty": "NORMAL",
+    "type": "知識",
+    "multiplier": 1.2
+  },
+  {
+    "left": "時間の無駄",
+    "right": "人生を豊かにする経験",
+    "format": "sentence",
+    "difficulty": "NORMAL",
+    "type": "評価軸",
+    "multiplier": 1.3
+  },
+  {
+    "left": "ただの偶然",
+    "right": "運命の必然",
+    "format": "sentence",
+    "difficulty": "NORMAL",
+    "type": "抽象",
+    "multiplier": 1.2
+  },
+  {
+    "left": "過大評価されている名作",
+    "right": "隠れた歴史的名作",
+    "format": "sentence",
+    "difficulty": "NORMAL",
+    "type": "評価軸",
+    "multiplier": 1.3
+  },
+  {
+    "left": "誰も理解できないアート",
+    "right": "万人の心を打つ芸術",
+    "format": "sentence",
+    "difficulty": "NORMAL",
+    "type": "文脈依存",
+    "multiplier": 1.3
+  },
+  {
+    "left": "すぐに飽きる趣味",
+    "right": "一生モノの趣味",
+    "format": "sentence",
+    "difficulty": "NORMAL",
+    "type": "文脈依存",
+    "multiplier": 1.3
+  },
+  {
+    "left": "ただのワガママ",
+    "right": "立派な自己主張",
+    "format": "sentence",
+    "difficulty": "NORMAL",
+    "type": "評価軸",
+    "multiplier": 1.3
+  },
+  {
+    "left": "最低のカスタマーサポート",
+    "right": "神対応",
+    "format": "sentence",
+    "difficulty": "NORMAL",
+    "type": "感情",
+    "multiplier": 1.2
+  },
+  {
+    "left": "科学的にあり得ない",
+    "right": "科学的に証明されている",
+    "format": "sentence",
+    "difficulty": "NORMAL",
+    "type": "知識",
+    "multiplier": 1.2
+  },
+  {
+    "left": "誰も使わない機能",
+    "right": "必須のキラーアプリ",
+    "format": "sentence",
+    "difficulty": "NORMAL",
+    "type": "評価軸",
+    "multiplier": 1.3
+  },
+  {
+    "left": "ただのノイズ",
+    "right": "心地よい環境音",
+    "format": "sentence",
+    "difficulty": "NORMAL",
+    "type": "文脈依存",
+    "multiplier": 1.3
+  },
+  {
+    "left": "ただの落書き",
+    "right": "現代アートの傑作",
+    "format": "sentence",
+    "difficulty": "NORMAL",
+    "type": "評価軸",
+    "multiplier": 1.3
+  },
+  {
+    "left": "非効率なだけの作業",
+    "right": "意味のある伝統行事",
+    "format": "sentence",
+    "difficulty": "NORMAL",
+    "type": "文脈依存",
+    "multiplier": 1.3
+  },
+  {
+    "left": "時代遅れの価値観",
+    "right": "次世代のスタンダード",
+    "format": "sentence",
+    "difficulty": "NORMAL",
+    "type": "評価軸",
+    "multiplier": 1.3
+  },
+  {
+    "left": "ルール違反のチート行為",
+    "right": "見事なプレイヤースキル",
+    "format": "sentence",
+    "difficulty": "NORMAL",
+    "type": "文脈依存",
+    "multiplier": 1.3
+  },
+  {
+    "left": "信じるだけ無駄な迷信",
+    "right": "人生の教訓になる格言",
+    "format": "sentence",
+    "difficulty": "NORMAL",
+    "type": "文脈依存",
+    "multiplier": 1.3
+  },
+  {
+    "left": "迷惑なだけの行為",
+    "right": "社会のためのボランティア",
+    "format": "sentence",
+    "difficulty": "NORMAL",
+    "type": "文脈依存",
+    "multiplier": 1.3
+  },
+  {
+    "left": "子供騙しのエンタメ",
+    "right": "大人も考えさせられる作品",
+    "format": "sentence",
+    "difficulty": "NORMAL",
+    "type": "評価軸",
+    "multiplier": 1.3
+  },
+  {
+    "left": "ただのパクリ",
+    "right": "素晴らしいオマージュ",
+    "format": "sentence",
+    "difficulty": "NORMAL",
+    "type": "文脈依存",
+    "multiplier": 1.3
+  },
+  {
+    "left": "単なる自己防衛",
+    "right": "他人への思いやり",
+    "format": "sentence",
+    "difficulty": "NORMAL",
+    "type": "文脈依存",
+    "multiplier": 1.3
+  },
+  {
+    "left": "意味不明な専門用語",
+    "right": "知っておくべき必須教養",
+    "format": "sentence",
+    "difficulty": "NORMAL",
+    "type": "知識",
+    "multiplier": 1.2
+  },
+  {
+    "left": "ただの偶然の産物",
+    "right": "緻密に計算された戦略",
+    "format": "sentence",
+    "difficulty": "NORMAL",
+    "type": "抽象",
+    "multiplier": 1.2
+  },
+  {
+    "left": "一時的なブーム",
+    "right": "永遠のスタンダード",
+    "format": "sentence",
+    "difficulty": "NORMAL",
+    "type": "評価軸",
+    "multiplier": 1.3
+  },
+  {
+    "left": "誰にでもできる仕事",
+    "right": "その人にしかできない天職",
+    "format": "sentence",
+    "difficulty": "NORMAL",
+    "type": "文脈依存",
+    "multiplier": 1.3
+  },
+  {
+    "left": "すぐに忘れられるニュース",
+    "right": "歴史の教科書に載る大事件",
+    "format": "sentence",
+    "difficulty": "NORMAL",
+    "type": "知識",
+    "multiplier": 1.2
+  },
+  {
+    "left": "ただの無謀な挑戦",
+    "right": "勇気ある偉大な第一歩",
+    "format": "sentence",
+    "difficulty": "NORMAL",
+    "type": "文脈依存",
+    "multiplier": 1.3
+  },
+  {
+    "left": "人を傷つけるだけの嘘",
+    "right": "人を守るための優しい嘘",
+    "format": "sentence",
+    "difficulty": "NORMAL",
+    "type": "文脈依存",
+    "multiplier": 1.3
+  },
+  {
+    "left": "単なる浪費家",
+    "right": "経済を回す消費者",
+    "format": "sentence",
+    "difficulty": "NORMAL",
+    "type": "評価軸",
+    "multiplier": 1.3
+  },
+  {
+    "left": "理不尽な校則",
+    "right": "社会に出るための準備",
+    "format": "sentence",
+    "difficulty": "NORMAL",
+    "type": "文脈依存",
+    "multiplier": 1.3
+  },
+  {
+    "left": "人類を滅亡に導く発明",
+    "right": "人類を救う大発明",
+    "format": "sentence",
+    "difficulty": "HARD",
+    "type": "評価軸",
+    "multiplier": 1.6
+  },
+  {
+    "left": "単なる知識のひけらかし",
+    "right": "真の知性を感じる言動",
+    "format": "sentence",
+    "difficulty": "HARD",
+    "type": "評価軸",
+    "multiplier": 1.6
+  },
+  {
+    "left": "ディストピアの象徴",
+    "right": "ユートピアの実現",
+    "format": "sentence",
+    "difficulty": "HARD",
+    "type": "抽象",
+    "multiplier": 1.5
+  },
+  {
+    "left": "時代に逆行している",
+    "right": "時代を先取りしすぎている",
+    "format": "sentence",
+    "difficulty": "HARD",
+    "type": "文脈依存",
+    "multiplier": 1.6
+  },
+  {
+    "left": "倫理的に許されない",
+    "right": "道徳の教科書に載るべき",
+    "format": "sentence",
+    "difficulty": "HARD",
+    "type": "評価軸",
+    "multiplier": 1.6
+  },
+  {
+    "left": "ただの詭弁",
+    "right": "本質を突いた真理",
+    "format": "sentence",
+    "difficulty": "HARD",
+    "type": "抽象",
+    "multiplier": 1.5
+  },
+  {
+    "left": "短期的には儲かるが長期的には損",
+    "right": "短期的には損だが長期的には得",
+    "format": "sentence",
+    "difficulty": "HARD",
+    "type": "文脈依存",
+    "multiplier": 1.6
+  },
+  {
+    "left": "人間の尊厳を奪う",
+    "right": "人間らしさを豊かにする",
+    "format": "sentence",
+    "difficulty": "HARD",
+    "type": "評価軸",
+    "multiplier": 1.6
+  },
+  {
+    "left": "偽善の極み",
+    "right": "真の利他主義",
+    "format": "sentence",
+    "difficulty": "HARD",
+    "type": "評価軸",
+    "multiplier": 1.6
+  },
+  {
+    "left": "単なる自己満足",
+    "right": "社会への大きな貢献",
+    "format": "sentence",
+    "difficulty": "HARD",
+    "type": "評価軸",
+    "multiplier": 1.6
+  },
+  {
+    "left": "エゴイスティックな行動",
+    "right": "究極の無償の愛",
+    "format": "sentence",
+    "difficulty": "HARD",
+    "type": "感情",
+    "multiplier": 1.5
+  },
+  {
+    "left": "全体主義の萌芽",
+    "right": "真の民主主義",
+    "format": "sentence",
+    "difficulty": "HARD",
+    "type": "知識",
+    "multiplier": 1.5
+  },
+  {
+    "left": "科学の敗北",
+    "right": "自然界の神秘",
+    "format": "sentence",
+    "difficulty": "HARD",
+    "type": "抽象",
+    "multiplier": 1.5
+  },
+  {
+    "left": "生存バイアスの結果",
+    "right": "真の実力による成功",
+    "format": "sentence",
+    "difficulty": "HARD",
+    "type": "知識",
+    "multiplier": 1.5
+  },
+  {
+    "left": "ただの洗脳",
+    "right": "素晴らしい教育",
+    "format": "sentence",
+    "difficulty": "HARD",
+    "type": "文脈依存",
+    "multiplier": 1.6
+  },
+  {
+    "left": "権力の濫用",
+    "right": "適切なリーダーシップ",
+    "format": "sentence",
+    "difficulty": "HARD",
+    "type": "文脈依存",
+    "multiplier": 1.6
+  },
+  {
+    "left": "表現の自由の濫用",
+    "right": "守られるべき言論の自由",
+    "format": "sentence",
+    "difficulty": "HARD",
+    "type": "評価軸",
+    "multiplier": 1.6
+  },
+  {
+    "left": "ただのポピュリズム",
+    "right": "民意の正当な反映",
+    "format": "sentence",
+    "difficulty": "HARD",
+    "type": "知識",
+    "multiplier": 1.5
+  },
+  {
+    "left": "単なる懐古主義",
+    "right": "温故知新の精神",
+    "format": "sentence",
+    "difficulty": "HARD",
+    "type": "抽象",
+    "multiplier": 1.5
+  },
+  {
+    "left": "人間性の喪失",
+    "right": "人類の新たな進化",
+    "format": "sentence",
+    "difficulty": "HARD",
+    "type": "評価軸",
+    "multiplier": 1.6
+  }
+]

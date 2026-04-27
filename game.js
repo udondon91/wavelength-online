@@ -17,6 +17,16 @@ function formatRound(msg) {
   return `ラウンド ${msg.round}/${msg.maxRounds} (${msg.turnInRound}/${msg.totalPlayers}人目)`;
 }
 
+function updateTopicBadges(prefix, msg) {
+  const diffBadge = $(`#${prefix}-difficulty`);
+  const multBadge = $(`#${prefix}-multiplier`);
+  if (diffBadge && multBadge && msg.difficulty) {
+    diffBadge.textContent = msg.difficulty;
+    diffBadge.className = `diff-badge ${msg.difficulty}`;
+    multBadge.textContent = `x${msg.multiplier.toFixed(1)}`;
+  }
+}
+
 // --- DOM Helpers ---
 const $ = (sel) => document.querySelector(sel);
 const $$ = (sel) => document.querySelectorAll(sel);
@@ -188,6 +198,7 @@ function handleServerMessage(msg) {
       if (msg.isHinter) {
         show("screen-hint");
         $("#hint-round").textContent = formatRound(msg);
+        updateTopicBadges("hint", msg);
         $("#hint-topic-left").textContent = msg.topic[0];
         $("#hint-topic-right").textContent = msg.topic[1];
         $("#hint-target-zone").style.left = `${msg.target}%`;
@@ -198,6 +209,7 @@ function handleServerMessage(msg) {
       } else {
         show("screen-waiting");
         $("#wait-round").textContent = formatRound(msg);
+        updateTopicBadges("wait", msg);
         $("#wait-topic-left").textContent = msg.topic[0];
         $("#wait-topic-right").textContent = msg.topic[1];
         $("#wait-hinter-name").textContent = msg.hinterName;
@@ -221,6 +233,7 @@ function handleServerMessage(msg) {
     case "main_guess_phase":
       show("screen-main-guess");
       $("#mguess-round").textContent = formatRound(msg);
+      updateTopicBadges("mguess", msg);
       $("#mguess-topic-left").textContent = msg.topic[0];
       $("#mguess-topic-right").textContent = msg.topic[1];
       $("#mguess-hint-display").textContent = `💡 "${msg.hint}"`;
@@ -254,6 +267,7 @@ function handleServerMessage(msg) {
     case "lr_guess_phase":
       show("screen-lr-guess");
       $("#lr-round").textContent = formatRound(msg);
+      updateTopicBadges("lr", msg);
       $("#lr-topic-left").textContent = msg.topic[0];
       $("#lr-topic-right").textContent = msg.topic[1];
       $("#lr-hint-display").textContent = `💡 "${msg.hint}"`;
@@ -294,6 +308,7 @@ function handleServerMessage(msg) {
     case "round_result":
       show("screen-reveal");
       $("#reveal-round").textContent = formatRound(msg);
+      updateTopicBadges("reveal", msg);
       $("#reveal-topic-left").textContent = msg.topic[0];
       $("#reveal-topic-right").textContent = msg.topic[1];
       $("#reveal-hint").textContent = `💡 "${msg.hint}"`;
@@ -317,14 +332,15 @@ function handleServerMessage(msg) {
 
       // Show scores
       const s = msg.scores;
+      const diffVal = s[msg.mainGuesserId].diff;
       const mScore = s[msg.mainGuesserId].score;
-      const hasPerfect = (mScore === 4);
+      const hasPerfect = (diffVal === 0);
 
       let scoresHtml = "";
       
       // 1. Main & Hinter
-      const pBadge = mScore === 4 ? "🎯 完璧!" : mScore === 3 ? "👏 すごい!" : mScore === 2 ? "👍 良い!" : mScore === 1 ? "😅 惜しい" : "💨 残念";
-      const pCls = mScore === 4 ? "score-perfect" : mScore >= 2 ? "score-good" : mScore === 1 ? "score-ok" : "score-miss";
+      const pBadge = diffVal === 0 ? "🎯 完璧!" : diffVal <= 10 ? "👏 すごい!" : diffVal <= 25 ? "👍 良い!" : diffVal <= 50 ? "😅 惜しい" : "💨 残念";
+      const pCls = diffVal === 0 ? "score-perfect" : diffVal <= 25 ? "score-good" : diffVal <= 50 ? "score-ok" : "score-miss";
 
       scoresHtml += `
         <div class="history-item" style="animation:fadeIn 0.4s ease 0s both;background:rgba(255,255,255,0.08);border:1px solid var(--accent-blue)">
@@ -359,7 +375,7 @@ function handleServerMessage(msg) {
             let resultCls = "";
             if (data.isPerfect) { resultBadge = "メインが完璧"; resultCls = "score-miss"; }
             else if (msg.target === msg.mainGuess) { resultBadge = "メインが完璧"; resultCls = "score-miss"; }
-            else if (isCorrect) { resultBadge = "+1 🎯"; resultCls = "score-perfect"; }
+            else if (isCorrect) { resultBadge = `+${data.score} 🎯`; resultCls = "score-perfect"; }
             else { resultBadge = "+0 💨"; resultCls = "score-miss"; }
 
             scoresHtml += `
