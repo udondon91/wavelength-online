@@ -134,8 +134,9 @@ function handleMessage(ws, playerId, msg) {
       const room = getRoom(ws);
       if (!room || room.host !== playerId) return;
       if (room.players.length < 2) { sendTo(ws, { type: "error", message: "2人以上必要です" }); return; }
-      room.maxRounds = msg.maxRounds || 5;
-      room.round = 0;
+      room.maxRounds = msg.maxRounds || 2; // Default to 2 rounds (rotations)
+      room.turn = 0; // Total hints given so far
+      room.round = 1; // Current round (rotation)
       room.history = [];
       room.usedTopics = [];
       room.totalScores = {};
@@ -154,9 +155,12 @@ function handleMessage(ws, playerId, msg) {
       
       const mainGuesser = room.players[room.mainGuesserIndex % room.players.length];
 
+      const turnInRound = ((room.turn - 1) % room.players.length) + 1;
       broadcast(room, {
         type: "main_guess_phase",
-        topic: room.topic, hint: room.hint, round: room.round, maxRounds: room.maxRounds,
+        topic: room.topic, hint: room.hint, 
+        round: room.round, maxRounds: room.maxRounds,
+        turnInRound: turnInRound, totalPlayers: room.players.length,
         hinterId: hinter.id, hinterName: hinter.name,
         mainGuesserId: mainGuesser.id, mainGuesserName: mainGuesser.name
       });
@@ -174,10 +178,13 @@ function handleMessage(ws, playerId, msg) {
       if (room.players.length > 2) {
         room.phase = "lr_guess";
         room.lrGuesses = {};
+        const turnInRound = ((room.turn - 1) % room.players.length) + 1;
         broadcast(room, {
           type: "lr_guess_phase",
           mainGuess: room.mainGuess,
-          topic: room.topic, hint: room.hint, round: room.round, maxRounds: room.maxRounds,
+          topic: room.topic, hint: room.hint, 
+          round: room.round, maxRounds: room.maxRounds,
+          turnInRound: turnInRound, totalPlayers: room.players.length,
           hinterId: room.players[room.hinterIndex % room.players.length].id,
           mainGuesserId: mainGuesser.id
         });
@@ -239,7 +246,9 @@ function handleMessage(ws, playerId, msg) {
 function getRoom(ws) { return ws._roomCode ? rooms.get(ws._roomCode) : null; }
 
 function startNextRound(room) {
-  room.round++;
+  room.turn++;
+  room.round = Math.ceil(room.turn / room.players.length);
+
   if (room.round > room.maxRounds) {
     room.phase = "final";
     const playerNames = {};
@@ -257,11 +266,13 @@ function startNextRound(room) {
   room.target = Math.floor(Math.random() * 101);
 
   // Rotation logic: Hinter -> next, MainGuesser -> next of Hinter
-  room.hinterIndex = (room.round - 1);
+  room.hinterIndex = (room.turn - 1);
   room.mainGuesserIndex = room.hinterIndex + 1;
 
   const hinter = room.players[room.hinterIndex % room.players.length];
   const mainGuesser = room.players[room.mainGuesserIndex % room.players.length];
+
+  const turnInRound = ((room.turn - 1) % room.players.length) + 1;
 
   room.players.forEach(p => {
     sendTo(p.ws, {
@@ -271,7 +282,8 @@ function startNextRound(room) {
       hinterName: hinter.name,
       mainGuesserName: mainGuesser.name,
       isHinter: p.id === hinter.id,
-      round: room.round, maxRounds: room.maxRounds
+      round: room.round, maxRounds: room.maxRounds,
+      turnInRound: turnInRound, totalPlayers: room.players.length
     });
   });
 }
@@ -312,8 +324,11 @@ function showRoundResult(room) {
     });
   }
 
+  const turnInRound = ((room.turn - 1) % room.players.length) + 1;
+  const isLastTurnOfGame = (room.round === room.maxRounds && turnInRound === room.players.length);
+
   room.history.push({
-    round: room.round, topic: room.topic, target: room.target, hint: room.hint,
+    round: room.round, turn: turnInRound, topic: room.topic, target: room.target, hint: room.hint,
     mainGuess: room.mainGuess, scores, playerNames
   });
 
@@ -321,7 +336,9 @@ function showRoundResult(room) {
     type: "round_result", target: room.target, topic: room.topic, hint: room.hint,
     mainGuess: room.mainGuess, scores, totalScores: room.totalScores, playerNames,
     hinterId: hinter.id, mainGuesserId: mainGuesser.id,
-    round: room.round, maxRounds: room.maxRounds, isLastRound: room.round >= room.maxRounds, host: room.host
+    round: room.round, maxRounds: room.maxRounds,
+    turnInRound: turnInRound, totalPlayers: room.players.length,
+    isLastRound: isLastTurnOfGame, host: room.host
   });
 }
 

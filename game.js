@@ -7,11 +7,15 @@ const state = {
   isHost: false,
   myName: "",
   players: [],
-  maxRounds: 5,
+  maxRounds: 2,
   soundEnabled: true,
   chatUnread: 0,
   currentVote: null
 };
+
+function formatRound(msg) {
+  return `ラウンド ${msg.round}/${msg.maxRounds} (${msg.turnInRound}/${msg.totalPlayers}人目)`;
+}
 
 // --- DOM Helpers ---
 const $ = (sel) => document.querySelector(sel);
@@ -183,7 +187,7 @@ function handleServerMessage(msg) {
     case "hint_phase":
       if (msg.isHinter) {
         show("screen-hint");
-        $("#hint-round").textContent = `ラウンド ${msg.round} / ${msg.maxRounds}`;
+        $("#hint-round").textContent = formatRound(msg);
         $("#hint-topic-left").textContent = msg.topic[0];
         $("#hint-topic-right").textContent = msg.topic[1];
         $("#hint-target-zone").style.left = `${msg.target}%`;
@@ -193,7 +197,7 @@ function handleServerMessage(msg) {
         $("#hint-main-guesser-name").textContent = msg.mainGuesserName;
       } else {
         show("screen-waiting");
-        $("#wait-round").textContent = `ラウンド ${msg.round} / ${msg.maxRounds}`;
+        $("#wait-round").textContent = formatRound(msg);
         $("#wait-topic-left").textContent = msg.topic[0];
         $("#wait-topic-right").textContent = msg.topic[1];
         $("#wait-hinter-name").textContent = msg.hinterName;
@@ -216,7 +220,7 @@ function handleServerMessage(msg) {
 
     case "main_guess_phase":
       show("screen-main-guess");
-      $("#mguess-round").textContent = `ラウンド ${msg.round} / ${msg.maxRounds}`;
+      $("#mguess-round").textContent = formatRound(msg);
       $("#mguess-topic-left").textContent = msg.topic[0];
       $("#mguess-topic-right").textContent = msg.topic[1];
       $("#mguess-hint-display").textContent = `💡 "${msg.hint}"`;
@@ -249,7 +253,7 @@ function handleServerMessage(msg) {
 
     case "lr_guess_phase":
       show("screen-lr-guess");
-      $("#lr-round").textContent = `ラウンド ${msg.round} / ${msg.maxRounds}`;
+      $("#lr-round").textContent = formatRound(msg);
       $("#lr-topic-left").textContent = msg.topic[0];
       $("#lr-topic-right").textContent = msg.topic[1];
       $("#lr-hint-display").textContent = `💡 "${msg.hint}"`;
@@ -289,7 +293,7 @@ function handleServerMessage(msg) {
 
     case "round_result":
       show("screen-reveal");
-      $("#reveal-round").textContent = `ラウンド ${msg.round} / ${msg.maxRounds}`;
+      $("#reveal-round").textContent = formatRound(msg);
       $("#reveal-topic-left").textContent = msg.topic[0];
       $("#reveal-topic-right").textContent = msg.topic[1];
       $("#reveal-hint").textContent = `💡 "${msg.hint}"`;
@@ -411,7 +415,7 @@ function handleServerMessage(msg) {
       $("#final-history").innerHTML = msg.history.map(h => `
         <div class="history-item">
           <div>
-            <span style="color:var(--text-secondary)">R${h.round}</span>
+            <span style="color:var(--text-secondary)">R${h.round}-${h.turn}</span>
             <span style="margin:0 6px">${h.topic[0]} ⇄ ${h.topic[1]}</span>
           </div>
           <span style="color:var(--text-secondary)">🎯 ${h.target} (予想: ${h.mainGuess})</span>
