@@ -339,4 +339,4 @@ function handleDisconnect(ws, playerId) {
   broadcast(room, { type: "player_list", players: getPlayerList(room), host: room.host });
 }
 
-server.listen(PORT, () => console.log(`🌊 Server running on port ${PORT}`));
+server.listen(PORT, "0.0.0.0", () => console.log(`🌊 Server running on port ${PORT}`));
