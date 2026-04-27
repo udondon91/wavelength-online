@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🌊 Wavelength Online</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <canvas id="confetti-canvas"></canvas>
+  <div id="toast" class="toast"></div>
+
+  <!-- Connection Status -->
+  <div id="connection-status" class="conn-status">
+    <span class="conn-dot"></span>
+    <span class="conn-text">接続中...</span>
+  </div>
+
+  <div class="container">
+    <!-- ===== WELCOME SCREEN ===== -->
+    <div id="screen-welcome" class="screen active">
+      <div class="emoji">🌊</div>
+      <h1 class="title">Wavelength</h1>
+      <p class="subtitle">オンラインで友達とスペクトラム予測！</p>
+
+      <div class="top-buttons">
+        <button id="btn-rules" class="btn btn-icon" title="ルール説明">📖</button>
+        <button id="btn-sound-toggle" class="btn btn-icon" title="サウンド切替">🔊</button>
+      </div>
+
+      <div class="card">
+        <h2>👤 あなたの名前</h2>
+        <div class="input-group">
+          <input type="text" id="my-name-input" class="input-field" placeholder="名前を入力..." maxlength="12">
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>🚪 ルーム</h2>
+        <button id="btn-create-room" class="btn btn-primary btn-full">✨ 新しいルームを作成</button>
+        <div class="divider" style="margin:16px 0"></div>
+        <p class="subtitle mb-8" style="text-align:left">または、ルームコードで参加:</p>
+        <div class="flex-row gap-8">
+          <input type="text" id="room-code-input" class="input-field room-code-field" placeholder="例: ABCD" maxlength="4" style="flex:1;text-transform:uppercase;text-align:center;font-size:1.3rem;font-weight:800;letter-spacing:4px">
+          <button id="btn-join-room" class="btn btn-primary" style="padding:14px 24px">参加</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== LOBBY SCREEN ===== -->
+    <div id="screen-lobby" class="screen">
+      <h2 class="text-center">🏠 ロビー</h2>
+      <div class="card text-center">
+        <p class="subtitle mb-8">ルームコードを友達にシェアしよう</p>
+        <div class="room-code-display" id="lobby-room-code"></div>
+        <div class="flex-row gap-8" style="margin-top:12px;justify-content:center;flex-wrap:wrap">
+          <button id="btn-copy-code" class="btn btn-secondary" style="padding:8px 20px;font-size:0.85rem">📋 コードをコピー</button>
+          <button id="btn-copy-link" class="btn btn-primary" style="padding:8px 20px;font-size:0.85rem">🔗 参加リンクをコピー</button>
+        </div>
+      </div>
+      <div class="card">
+        <h2>👥 参加者 <span id="lobby-player-count" class="player-count"></span></h2>
+        <div id="lobby-player-list" class="player-list"></div>
+      </div>
+      <div id="host-controls" class="card" style="display:none">
+        <h2>⚙️ 設定</h2>
+        <div class="input-group">
+          <label>ラウンド数</label>
+          <div class="chip-group" id="round-chips">
+            <button class="chip" data-val="3">3</button>
+            <button class="chip active" data-val="5">5</button>
+            <button class="chip" data-val="7">7</button>
+            <button class="chip" data-val="10">10</button>
+          </div>
+        </div>
+        <button id="btn-start-game" class="btn btn-primary btn-full" style="margin-top:16px">🎮 ゲーム開始！</button>
+      </div>
+      <div id="guest-waiting" class="card text-center" style="display:none">
+        <p class="subtitle">ホストがゲームを開始するのを待っています<span class="waiting-dots"></span></p>
+      </div>
+      <button id="btn-leave-lobby" class="btn btn-secondary btn-full">🚪 ルームを退出</button>
+    </div>
+
+    <!-- ===== HINT SCREEN (Hinter View) ===== -->
+    <div id="screen-hint" class="screen">
+      <div class="round-info w-full">
+        <span id="hint-round" class="round-badge"></span>
+        <span class="round-badge" style="background:var(--accent-orange)">👑 あなたがヒント役</span>
+      </div>
+      <div class="card">
+        <h3 class="text-center mb-8">お題</h3>
+        <div class="spectrum-container">
+          <div class="spectrum-labels">
+            <span id="hint-topic-left" class="spectrum-left"></span>
+            <span id="hint-topic-right" class="spectrum-right"></span>
+          </div>
+          <div class="spectrum-bar">
+            <div class="spectrum-bar-inner">
+              <div id="hint-target-zone" class="target-zone"></div>
+              <div id="hint-target-marker" class="target-marker"></div>
+            </div>
+          </div>
+        </div>
+        <p class="text-center mt-8" style="color:var(--accent-orange);font-weight:700">🎯 ターゲット: <span id="hint-target-value"></span></p>
+      </div>
+      <div class="card">
+        <h3 class="text-center mb-8">ヒントを入力してください</h3>
+        <p class="subtitle mb-8">当てる人（<span id="hint-main-guesser-name" style="font-weight:bold;color:var(--accent-blue)"></span>）に位置を伝える言葉を入力</p>
+        <div class="input-group">
+          <input type="text" id="hint-input" class="input-field" placeholder="ヒントを入力..." maxlength="50">
+        </div>
+      </div>
+      <button id="btn-submit-hint" class="btn btn-primary btn-full">📤 ヒントを送信</button>
+      <button id="btn-skip-topic" class="btn btn-secondary btn-full">🔄 お題をスキップ</button>
+    </div>
+
+    <!-- ===== WAITING SCREEN (During Hint Phase) ===== -->
+    <div id="screen-waiting" class="screen">
+      <div class="round-info w-full">
+        <span id="wait-round" class="round-badge"></span>
+        <span class="round-badge">⏳ 待機中</span>
+      </div>
+      <div class="card text-center">
+        <div class="spectrum-container">
+          <div class="spectrum-labels">
+            <span id="wait-topic-left" class="spectrum-left"></span>
+            <span id="wait-topic-right" class="spectrum-right"></span>
+          </div>
+          <div class="spectrum-bar"><div class="spectrum-bar-inner"></div></div>
+        </div>
+      </div>
+      <div class="card text-center">
+        <div class="emoji" style="font-size:2.5rem">🤔</div>
+        <h3><span id="wait-hinter-name" style="color:var(--accent-orange)"></span> がヒントを考え中<span class="waiting-dots"></span></h3>
+        <p class="subtitle mt-8">ヒントが出されるまでお待ちください</p>
+      </div>
+    </div>
+
+    <!-- ===== MAIN GUESS SCREEN ===== -->
+    <div id="screen-main-guess" class="screen">
+      <div class="round-info w-full">
+        <span id="mguess-round" class="round-badge"></span>
+        <span class="round-badge" id="mguess-role-badge">🤔 予想フェーズ</span>
+      </div>
+      <div class="card">
+        <h3 class="text-center mb-8">お題</h3>
+        <div class="spectrum-container">
+          <div class="spectrum-labels">
+            <span id="mguess-topic-left" class="spectrum-left"></span>
+            <span id="mguess-topic-right" class="spectrum-right"></span>
+          </div>
+          <div class="spectrum-bar">
+            <div class="spectrum-bar-inner">
+              <div id="mguess-marker" class="guess-marker" style="left:50%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="mguess-hint-display" class="hint-display"></div>
+
+      <!-- Main Guesser View -->
+      <div id="mguess-controls" class="card" style="display:none">
+        <h3 class="text-center mb-8" style="color:var(--accent-blue)">スライダーで位置を決定！</h3>
+        <p class="subtitle text-center mb-8">周りの意見に惑わされないように！</p>
+        <div class="slider-container">
+          <div id="mguess-slider-value" class="slider-value">50</div>
+          <input type="range" id="mguess-slider" min="0" max="100" value="50">
+        </div>
+        <button id="btn-submit-mguess" class="btn btn-primary btn-full" style="margin-top:12px">✅ これで決定！</button>
+      </div>
+
+      <!-- Wait View for Others -->
+      <div id="mguess-waiting" class="card text-center" style="display:none">
+        <h3><span id="mguess-main-guesser-name" style="color:var(--accent-blue)"></span> が予想中<span class="waiting-dots"></span></h3>
+        <p class="subtitle mt-8">チャットで口出しして惑わそう！</p>
+      </div>
+    </div>
+
+    <!-- ===== LEFT/RIGHT GUESS SCREEN (For Others) ===== -->
+    <div id="screen-lr-guess" class="screen">
+      <div class="round-info w-full">
+        <span id="lr-round" class="round-badge"></span>
+        <span class="round-badge">◀▶ 左右当てフェーズ</span>
+      </div>
+      <div class="card">
+        <h3 class="text-center mb-8">お題</h3>
+        <div class="spectrum-container">
+          <div class="spectrum-labels">
+            <span id="lr-topic-left" class="spectrum-left"></span>
+            <span id="lr-topic-right" class="spectrum-right"></span>
+          </div>
+          <div class="spectrum-bar">
+            <div class="spectrum-bar-inner">
+              <!-- Main guess locked -->
+              <div id="lr-main-marker" class="guess-marker locked"></div>
+            </div>
+          </div>
+        </div>
+        <p class="text-center mt-8"><span id="lr-main-guesser-name" style="font-weight:bold;color:var(--accent-blue)"></span> の予想: <strong id="lr-main-val"></strong></p>
+      </div>
+      <div id="lr-hint-display" class="hint-display"></div>
+
+      <!-- Voter Controls -->
+      <div id="lr-controls" class="card">
+        <h3 class="text-center mb-8">本当のターゲットはどっち？</h3>
+        <div class="flex-row gap-8" style="justify-content:center">
+          <button id="btn-lr-left" class="btn btn-secondary" style="flex:1;font-size:1.2rem">◀ 左</button>
+          <button id="btn-lr-right" class="btn btn-secondary" style="flex:1;font-size:1.2rem">右 ▶</button>
+        </div>
+      </div>
+
+      <!-- Wait view -->
+      <div id="lr-waiting" class="card text-center" style="display:none">
+        <div class="emoji" style="font-size:2rem">⏳</div>
+        <h3>他の人の投票を待っています<span class="waiting-dots"></span></h3>
+      </div>
+      <div id="lr-progress" class="progress-bar-container">
+        <div class="progress-label"><span id="lr-submitted">0</span> / <span id="lr-total">0</span> 人が投票済み</div>
+        <div class="progress-bar"><div id="lr-progress-bar" class="progress-fill"></div></div>
+      </div>
+    </div>
+
+    <!-- ===== REVEAL SCREEN ===== -->
+    <div id="screen-reveal" class="screen">
+      <div class="round-info w-full">
+        <span id="reveal-round" class="round-badge"></span>
+        <span class="round-badge">📊 結果発表</span>
+      </div>
+      <div class="card">
+        <div class="spectrum-container">
+          <div class="spectrum-labels">
+            <span id="reveal-topic-left" class="spectrum-left"></span>
+            <span id="reveal-topic-right" class="spectrum-right"></span>
+          </div>
+          <div class="spectrum-bar">
+            <div class="spectrum-bar-inner">
+              <div id="reveal-target-zone" class="target-zone hidden"></div>
+              <div id="reveal-target-marker" class="target-marker" style="opacity:0"></div>
+              <div id="reveal-main-marker" class="guess-marker locked"></div>
+            </div>
+          </div>
+        </div>
+        <p id="reveal-target-value" class="text-center mt-8" style="font-weight:700;font-size:1.1rem"></p>
+        <p id="reveal-hint" class="text-center" style="color:var(--text-secondary)"></p>
+      </div>
+
+      <div class="card">
+        <h2>🏅 このラウンドのスコア</h2>
+        <div id="reveal-scores" class="history-list"></div>
+      </div>
+
+      <div class="score-summary" id="running-scores"></div>
+
+      <div id="reveal-host-btn" style="display:none;width:100%">
+        <button id="btn-next-round" class="btn btn-primary btn-full">➡️ 次のラウンドへ</button>
+      </div>
+      <div id="reveal-guest-wait" class="text-center" style="display:none">
+        <p class="subtitle">ホストを待っています<span class="waiting-dots"></span></p>
+      </div>
+    </div>
+
+    <!-- ===== FINAL SCREEN ===== -->
+    <div id="screen-final" class="screen">
+      <div class="emoji">🏆</div>
+      <h1 class="title">ゲーム終了！</h1>
+      <div class="card text-center">
+        <h3 style="color:var(--text-secondary)">👑 優勝</h3>
+        <p id="final-winner-name" style="font-size:2rem;font-weight:800;margin:8px 0"></p>
+        <p id="final-winner-score" class="score-perfect" style="font-size:1.5rem;font-weight:700"></p>
+      </div>
+      <div class="card">
+        <h2>📊 最終ランキング</h2>
+        <div id="final-ranking" class="history-list"></div>
+      </div>
+      <div class="card">
+        <h2>📜 ラウンド履歴</h2>
+        <div id="final-history" class="history-list"></div>
+      </div>
+      <button id="btn-share" class="btn btn-secondary btn-full">📋 結果をコピー</button>
+      <button id="btn-back-lobby" class="btn btn-primary btn-full">🏠 ロビーに戻る</button>
+    </div>
+  </div>
+
+  <!-- Chat Panel -->
+  <div id="chat-panel" class="chat-panel">
+    <button id="btn-chat-toggle" class="chat-toggle">💬 <span id="chat-badge" class="chat-badge" style="display:none">0</span></button>
+    <div id="chat-body" class="chat-body" style="display:none">
+      <div class="chat-header"><span>💬 チャット</span><button id="btn-chat-close" class="chat-close-btn">✕</button></div>
+      <div id="chat-messages" class="chat-messages"></div>
+      <div class="chat-input-row">
+        <input type="text" id="chat-input" class="input-field" placeholder="メッセージ..." maxlength="100">
+        <button id="btn-chat-send" class="btn btn-primary" style="padding:10px 16px">送信</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Rules Modal -->
+  <div id="modal-rules" class="modal-overlay">
+    <div class="modal-content">
+      <button class="modal-close" id="btn-close-rules">✕</button>
+      <h2>📖 ルール説明</h2>
+      <div class="rules-body">
+        <div class="rule-item"><span class="rule-num">1</span><p><strong>役割分担</strong><br>「ヒント役(1人)」「当てる役(1人)」「その他」に分かれます</p></div>
+        <div class="rule-item"><span class="rule-num">2</span><p><strong>メイン予想</strong><br>ヒントを見て、当てる役が位置を決めます（他の人は口出しOK！）</p></div>
+        <div class="rule-item"><span class="rule-num">3</span><p><strong>左右当て</strong><br>その他の人は、メイン予想より本当のターゲットが「左」か「右」か投票します</p></div>
+        <div class="rule-item"><span class="rule-num">4</span><p><strong>スコア（メイン・ヒント役）</strong><br>差2以内=4pt、差5以内=3pt、差10以内=2pt、差20以内=1pt</p></div>
+        <div class="rule-item"><span class="rule-num">5</span><p><strong>スコア（その他の人）</strong><br>メインが外れていた場合、左右を当てていれば 1pt 獲得！</p></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>
