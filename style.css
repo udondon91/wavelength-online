@@ -63,6 +63,10 @@ h3{font-size:1.1rem;font-weight:600;color:var(--text-secondary)}
 .diff-badge.HARD{background:rgba(255,78,163,0.15);color:var(--accent-pink);border:1px solid rgba(255,78,163,0.3)}
 .mult-badge{padding:4px 10px;border-radius:12px;font-size:0.75rem;font-weight:700;background:var(--bg-glass);color:var(--text-primary);border:1px solid rgba(255,255,255,0.1)}
 
+.topics-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.85rem; }
+.topics-table th, .topics-table td { border-bottom: 1px solid rgba(255,255,255,0.1); padding: 8px 4px; }
+.topics-table th { color: var(--text-secondary); }
+
 .spectrum-container{width:100%;margin:16px 0}
 .spectrum-labels{display:flex;justify-content:space-between;margin-bottom:10px;font-weight:700;font-size:0.95rem}
 .spectrum-left{color:#ff4e50}

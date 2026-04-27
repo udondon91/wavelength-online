@@ -47,7 +47,7 @@ function getPlayerList(room) {
 }
 
 // --- HTTP Server ---
-const MIME = { ".html":"text/html",".css":"text/css",".js":"application/javascript" };
+const MIME = { ".html":"text/html",".css":"text/css",".js":"application/javascript",".json":"application/json" };
 
 const server = http.createServer((req, res) => {
   const urlPath = req.url.split('?')[0];

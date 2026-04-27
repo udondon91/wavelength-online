@@ -609,6 +609,32 @@ function init() {
   $("#btn-back-lobby").addEventListener("click", () => window.location.href = "/");
   $("#btn-leave-lobby").addEventListener("click", () => window.location.href = "/");
 
+  // Topics list modal
+  $("#btn-topics").addEventListener("click", async () => {
+    $("#modal-topics").classList.add("active");
+    if (!state.topicsLoaded) {
+      try {
+        const res = await fetch("/topics.json");
+        const topics = await res.json();
+        let html = `<table class="topics-table"><tr><th>左右</th><th>形式</th><th>難易度</th><th>種類</th><th>倍率</th></tr>`;
+        topics.forEach(t => {
+          html += `<tr>
+            <td>${t.left} ⇄ ${t.right}</td>
+            <td>${t.format === 'word' ? '単語' : '文章'}</td>
+            <td><span class="diff-badge ${t.difficulty}">${t.difficulty}</span></td>
+            <td>${t.type}</td>
+            <td>x${t.multiplier.toFixed(1)}</td>
+          </tr>`;
+        });
+        html += `</table>`;
+        $("#topics-list-container").innerHTML = html;
+        state.topicsLoaded = true;
+      } catch (e) {
+        $("#topics-list-container").innerHTML = "読み込みエラー";
+      }
+    }
+  });
+
   // Rules
   $("#btn-rules").addEventListener("click", () => $("#modal-rules").classList.add("active"));
   $("#btn-close-rules").addEventListener("click", () => $("#modal-rules").classList.remove("active"));

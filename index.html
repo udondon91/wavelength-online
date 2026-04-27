@@ -57,6 +57,9 @@
           <button id="btn-copy-code" class="btn btn-secondary" style="padding:8px 20px;font-size:0.85rem">📋 コードをコピー</button>
           <button id="btn-copy-link" class="btn btn-primary" style="padding:8px 20px;font-size:0.85rem">🔗 参加リンクをコピー</button>
         </div>
+        <div style="margin-top:16px;">
+          <button id="btn-topics" class="btn btn-secondary btn-full">📚 お題一覧 (150種)</button>
+        </div>
       </div>
       <div class="card">
         <h2>👥 参加者 <span id="lobby-player-count" class="player-count"></span></h2>
@@ -326,6 +329,15 @@
         <div class="rule-item"><span class="rule-num">4</span><p><strong>スコア（メイン・ヒント役）</strong><br>差2以内=4pt、差5以内=3pt、差10以内=2pt、差20以内=1pt</p></div>
         <div class="rule-item"><span class="rule-num">5</span><p><strong>スコア（その他の人）</strong><br>メインが外れていた場合、左右を当てていれば 1pt 獲得！</p></div>
       </div>
+    </div>
+  </div>
+
+  <!-- Topics Modal -->
+  <div id="modal-topics" class="modal">
+    <div class="modal-content" style="max-width: 600px; max-height: 80vh; overflow-y: auto;">
+      <h2>📚 お題一覧 (全150種)</h2>
+      <div id="topics-list-container" style="margin-top: 16px;">読み込み中...</div>
+      <button class="btn btn-secondary btn-full mt-16" onclick="document.getElementById('modal-topics').classList.remove('active')">閉じる</button>
     </div>
   </div>
 
