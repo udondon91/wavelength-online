@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>🌊 Wavelength Online</title>
   <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
   <canvas id="confetti-canvas"></canvas>
@@ -17,32 +18,54 @@
   </div>
 
   <div class="container">
-    <!-- ===== WELCOME SCREEN ===== -->
-    <div id="screen-welcome" class="screen active">
+    <!-- ===== REGISTER SCREEN ===== -->
+    <div id="screen-register" class="screen">
       <div class="emoji">🌊</div>
       <h1 class="title">Wavelength</h1>
       <p class="subtitle">オンラインで友達とスペクトラム予測！</p>
 
-      <div class="top-buttons">
-        <button id="btn-rules" class="btn btn-icon" title="ルール説明">📖</button>
-        <button id="btn-sound-toggle" class="btn btn-icon" title="サウンド切替">🔊</button>
-      </div>
-
       <div class="card">
-        <h2>👤 あなたの名前</h2>
+        <h2>👤 あなたのプロフィール</h2>
         <div class="input-group">
-          <input type="text" id="my-name-input" class="input-field" placeholder="名前を入力..." maxlength="12">
+          <label>アバター（絵文字1文字）</label>
+          <input type="text" id="reg-avatar" class="input-field text-center" style="font-size:2rem" value="👤" maxlength="2">
         </div>
+        <div class="input-group mt-16">
+          <label>プレイヤー名</label>
+          <input type="text" id="reg-name" class="input-field" placeholder="名前を入力..." maxlength="12">
+        </div>
+        <button id="btn-register" class="btn btn-primary btn-full mt-16" disabled>はじめる</button>
       </div>
+    </div>
 
-      <div class="card">
+    <!-- ===== HOME SCREEN ===== -->
+    <div id="screen-home" class="screen">
+      <div class="card text-center" style="max-width:400px; width:100%">
+        <div class="top-buttons">
+          <button id="btn-rules" class="btn btn-icon" title="ルール説明">📖</button>
+          <button id="btn-sound-toggle" class="btn btn-icon" title="サウンド切替">🔊</button>
+        </div>
+        
+        <div id="home-profile" class="mb-16 mt-16">
+           <span id="home-avatar" style="font-size:4rem; display:block; margin-bottom:8px"></span>
+           <h2 id="home-name" style="font-size:1.8rem; margin:0"></h2>
+           <p id="home-title" style="color:var(--accent-orange); font-weight:bold; margin-top:4px"></p>
+           <p style="color:var(--text-secondary); margin-top:8px">フレンドコード: <strong id="home-friend-code" style="color:#fff; user-select:all;"></strong></p>
+        </div>
+        
+        <div class="flex-row gap-8 mb-16">
+          <button id="btn-show-profile" class="btn btn-secondary" style="flex:1">📊 マイページ</button>
+          <button id="btn-show-friends" class="btn btn-secondary" style="flex:1">👥 フレンド</button>
+        </div>
+        
+        <div class="divider" style="margin:24px 0"></div>
+        
         <h2>🚪 ルーム</h2>
-        <button id="btn-create-room" class="btn btn-primary btn-full">✨ 新しいルームを作成</button>
-        <div class="divider" style="margin:16px 0"></div>
-        <p class="subtitle mb-8" style="text-align:left">または、ルームコードで参加:</p>
-        <div class="flex-row gap-8">
-          <input type="text" id="room-code-input" class="input-field room-code-field" placeholder="例: ABCD" maxlength="4" style="flex:1;text-transform:uppercase;text-align:center;font-size:1.3rem;font-weight:800;letter-spacing:4px">
-          <button id="btn-join-room" class="btn btn-primary" style="padding:14px 24px">参加</button>
+        <button id="btn-home-create" class="btn btn-primary btn-full mb-16" style="padding:16px; font-size:1.2rem">✨ 新しいルームを作る</button>
+        
+        <div class="input-group flex-row gap-8 mt-16">
+          <input type="text" id="home-room-code" class="input-field" placeholder="ルームコード(例: ABCD)" style="text-transform:uppercase; text-align:center; font-size:1.3rem; letter-spacing:4px;" maxlength="4">
+          <button id="btn-home-join" class="btn btn-secondary" style="padding:14px 24px">参加</button>
         </div>
       </div>
     </div>
@@ -339,6 +362,49 @@
       <h2>📚 お題一覧 (全150種)</h2>
       <div id="topics-list-container" style="margin-top: 16px;">読み込み中...</div>
       <button class="btn btn-secondary btn-full mt-16" onclick="document.getElementById('modal-topics').classList.remove('active')">閉じる</button>
+    </div>
+  </div>
+
+  <!-- Profile Modal -->
+  <div id="modal-profile" class="modal">
+    <div class="modal-content" style="max-width: 500px;">
+      <h2>📊 マイページ（傾向分析）</h2>
+      <div style="width:100%; max-width:350px; margin:0 auto;">
+        <canvas id="radar-chart"></canvas>
+      </div>
+      <div id="profile-stats" class="mt-16 text-center" style="font-size:0.9rem; color:var(--text-secondary);">
+      </div>
+      <button class="btn btn-secondary btn-full mt-16" onclick="document.getElementById('modal-profile').classList.remove('active')">閉じる</button>
+    </div>
+  </div>
+
+  <!-- Friends Modal -->
+  <div id="modal-friends" class="modal">
+    <div class="modal-content" style="max-width: 400px; min-height:300px">
+      <h2>👥 フレンド</h2>
+      <div class="input-group flex-row gap-8 mb-16">
+        <input type="text" id="input-friend-code" class="input-field" placeholder="フレンドコード(例: XXXX-XXXX)">
+        <button id="btn-add-friend" class="btn btn-primary">追加</button>
+      </div>
+      <div id="friends-list" style="text-align:left; max-height:250px; overflow-y:auto; margin-bottom:16px;">
+        フレンドがいません
+      </div>
+      <button class="btn btn-secondary btn-full mt-16" onclick="document.getElementById('modal-friends').classList.remove('active')">閉じる</button>
+    </div>
+  </div>
+
+  <!-- Invite Popup -->
+  <div id="invite-popup" class="card" style="display:none; position:fixed; bottom:24px; right:24px; z-index:9999; border:2px solid var(--accent-orange); animation: fadeIn 0.3s ease;">
+    <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px">
+      <span id="invite-from-avatar" style="font-size:2rem"></span>
+      <div>
+        <strong id="invite-from-name"></strong><br>
+        <span style="font-size:0.85rem; color:var(--text-secondary)">から招待が届きました！</span>
+      </div>
+    </div>
+    <div class="flex-row gap-8 mt-8">
+      <button id="btn-accept-invite" class="btn btn-primary" style="flex:1">参加</button>
+      <button id="btn-decline-invite" class="btn btn-secondary" style="flex:1">拒否</button>
     </div>
   </div>
 

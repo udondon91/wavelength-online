@@ -137,16 +137,46 @@ function launchConfetti() {
   animate();
 }
 
-// --- Initialize WebSocket ---
-function connectWebSocket() {
+// --- Local Storage Management ---
+let account = JSON.parse(localStorage.getItem('wl_account'));
+let stats = JSON.parse(localStorage.getItem('wl_stats')) || {
+  "直感": { earned: 0, max: 0 }, "感情": { earned: 0, max: 0 },
+  "抽象": { earned: 0, max: 0 }, "知識": { earned: 0, max: 0 },
+  "評価軸": { earned: 0, max: 0 }, "文脈依存": { earned: 0, max: 0 }
+};
+let friends = JSON.parse(localStorage.getItem('wl_friends')) || [];
+
+function saveAccount() { localStorage.setItem('wl_account', JSON.stringify(account)); }
+function saveStats() { localStorage.setItem('wl_stats', JSON.stringify(stats)); }
+function saveFriends() { localStorage.setItem('wl_friends', JSON.stringify(friends)); }
+
+function addStat(type, earned, max) {
+  if (stats[type] && max > 0) {
+    stats[type].earned += earned;
+    stats[type].max += max;
+    saveStats();
+  }
+}
+
+// --- Initialize Global WebSocket ---
+function connectGlobal() {
   const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
   const wsUrl = `${protocol}//${window.location.host}`;
   state.ws = new WebSocket(wsUrl);
 
-  state.ws.onopen = () => updateConnectionStatus(true);
+  state.ws.onopen = () => {
+    updateConnectionStatus(true);
+    sendMsg({
+      type: "register",
+      userId: account.userId,
+      name: account.name,
+      avatar: account.avatar,
+      friendCode: account.friendCode
+    });
+  };
   state.ws.onclose = () => {
     updateConnectionStatus(false);
-    setTimeout(connectWebSocket, 2000);
+    setTimeout(connectGlobal, 2000);
   };
   state.ws.onmessage = (event) => handleServerMessage(JSON.parse(event.data));
 }
@@ -181,6 +211,33 @@ function handleServerMessage(msg) {
 
     case "player_list":
       updateLobby(msg.players, msg.host);
+      break;
+
+    case "invite_received":
+      $("#invite-from-avatar").textContent = msg.fromAvatar;
+      $("#invite-from-name").textContent = msg.fromName;
+      $("#invite-popup").style.display = "block";
+      
+      const btnAccept = $("#btn-accept-invite");
+      const btnDecline = $("#btn-decline-invite");
+      
+      const cleanup = () => {
+        $("#invite-popup").style.display = "none";
+        btnAccept.replaceWith(btnAccept.cloneNode(true));
+        btnDecline.replaceWith(btnDecline.cloneNode(true));
+      };
+      
+      btnAccept.addEventListener("click", () => {
+        state.myName = account.name;
+        sendMsg({ type: "join_room", name: account.name, code: msg.roomCode });
+        sfxClick();
+        cleanup();
+      }, { once: true });
+      
+      btnDecline.addEventListener("click", () => {
+        sfxClick();
+        cleanup();
+      }, { once: true });
       break;
 
     case "host_changed":
@@ -335,6 +392,15 @@ function handleServerMessage(msg) {
       const diffVal = s[msg.mainGuesserId].diff;
       const mScore = s[msg.mainGuesserId].score;
       const hasPerfect = (diffVal === 0);
+
+      // Track Stats
+      const maxMainScore = Math.round(100 * msg.multiplier);
+      if (msg.mainGuesserId === account.userId || msg.hinterId === account.userId) {
+         addStat(msg.topicType, s[account.userId].score, maxMainScore);
+      } else if (s[account.userId] && s[account.userId].role === "other") {
+         const maxOther = Math.round(30 * msg.multiplier);
+         addStat(msg.topicType, s[account.userId].score, maxOther);
+      }
 
       let scoresHtml = "";
       
@@ -492,35 +558,177 @@ function addChatMessage(name, message) {
 }
 
 // --- Init UI ---
+function generateFriendCode() {
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  let c = "";
+  for(let i=0; i<8; i++) c += chars.charAt(Math.floor(Math.random() * chars.length));
+  return c.slice(0,4) + "-" + c.slice(4);
+}
+
 function init() {
-  connectWebSocket();
+  if (!account) {
+    show("screen-register");
+    $("#reg-name").addEventListener("input", (e) => {
+      $("#btn-register").disabled = e.target.value.trim().length === 0;
+    });
+    $("#btn-register").addEventListener("click", () => {
+      account = {
+        userId: "u" + Date.now() + Math.floor(Math.random()*1000),
+        name: $("#reg-name").value.trim() || "名無し",
+        avatar: $("#reg-avatar").value.trim() || "👤",
+        friendCode: generateFriendCode()
+      };
+      saveAccount();
+      connectGlobal();
+      initHome();
+    });
+  } else {
+    connectGlobal();
+    initHome();
+  }
+}
+
+function initHome() {
+  show("screen-home");
+  $("#home-avatar").textContent = account.avatar;
+  $("#home-name").textContent = account.name;
+  $("#home-friend-code").textContent = account.friendCode;
+  
+  // Calculate Title
+  let bestType = "直感";
+  let maxRate = 0;
+  Object.keys(stats).forEach(t => {
+    if (stats[t].max > 0) {
+      const rate = stats[t].earned / stats[t].max;
+      if (rate > maxRate) { maxRate = rate; bestType = t; }
+    }
+  });
+  if (maxRate > 0) {
+    const titles = { "直感": "直感の神", "感情": "共感マスター", "抽象": "抽象の魔術師", "知識": "博識王", "評価軸": "価値観の支配者", "文脈依存": "空気を読む達人" };
+    $("#home-title").textContent = `称号: ${titles[bestType] || "初心者"}`;
+  } else {
+    $("#home-title").textContent = "称号: 見習いエスパー";
+  }
 
   // Auto-fill room code from URL query param
   const urlParams = new URLSearchParams(window.location.search);
   const roomFromUrl = urlParams.get("room");
   if (roomFromUrl) {
-    $("#room-code-input").value = roomFromUrl.toUpperCase();
+    $("#home-room-code").value = roomFromUrl.toUpperCase();
+    const tryJoin = () => {
+      if (state.ws && state.ws.readyState === 1) { // OPEN
+        $("#btn-home-join").click();
+      } else {
+        setTimeout(tryJoin, 100);
+      }
+    };
+    tryJoin();
   }
 
-  // Create room
-  $("#btn-create-room").addEventListener("click", () => {
-    const name = $("#my-name-input").value.trim();
-    if (!name) { showToast("名前を入力してください"); return; }
-    state.myName = name;
-    sendMsg({ type: "create_room", name });
+  $("#btn-home-create").addEventListener("click", () => {
+    state.myName = account.name;
+    sendMsg({ type: "create_room", name: account.name });
     sfxClick();
   });
 
-  // Join room
-  $("#btn-join-room").addEventListener("click", () => {
-    const name = $("#my-name-input").value.trim();
-    const code = $("#room-code-input").value.trim();
-    if (!name) { showToast("名前を入力してください"); return; }
+  $("#btn-home-join").addEventListener("click", () => {
+    const code = $("#home-room-code").value.trim();
     if (!code || code.length !== 4) { showToast("4桁のルームコードを入力してください"); return; }
-    state.myName = name;
-    sendMsg({ type: "join_room", name, code });
+    state.myName = account.name;
+    sendMsg({ type: "join_room", name: account.name, code });
     sfxClick();
   });
+
+  // Profile Modal & Chart.js
+  $("#btn-show-profile").addEventListener("click", () => {
+    $("#modal-profile").classList.add("active");
+    renderRadarChart();
+  });
+
+  // Friends Modal
+  $("#btn-show-friends").addEventListener("click", () => {
+    $("#modal-friends").classList.add("active");
+    renderFriendsList();
+  });
+
+  $("#btn-add-friend").addEventListener("click", () => {
+    const code = $("#input-friend-code").value.trim().toUpperCase();
+    if (code && code !== account.friendCode && !friends.find(f => f.friendCode === code)) {
+      friends.push({ friendCode: code, name: `フレンド(${code})` }); // Name will be updated on invite
+      saveFriends();
+      renderFriendsList();
+      $("#input-friend-code").value = "";
+      showToast("フレンドを追加しました！");
+    }
+  });
+}
+
+let radarChart = null;
+function renderRadarChart() {
+  const ctx = document.getElementById('radar-chart').getContext('2d');
+  const labels = Object.keys(stats);
+  const data = labels.map(t => stats[t].max > 0 ? Math.round((stats[t].earned / stats[t].max) * 100) : 0);
+
+  if (radarChart) radarChart.destroy();
+  radarChart = new Chart(ctx, {
+    type: 'radar',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: '正解率 (%)',
+        data: data,
+        backgroundColor: 'rgba(78, 124, 255, 0.4)',
+        borderColor: 'rgba(78, 124, 255, 1)',
+        pointBackgroundColor: 'rgba(78, 124, 255, 1)',
+        pointBorderColor: '#fff',
+        pointHoverBackgroundColor: '#fff',
+        pointHoverBorderColor: 'rgba(78, 124, 255, 1)'
+      }]
+    },
+    options: {
+      scales: {
+        r: {
+          angleLines: { color: 'rgba(255, 255, 255, 0.2)' },
+          grid: { color: 'rgba(255, 255, 255, 0.2)' },
+          pointLabels: { color: 'rgba(255, 255, 255, 0.8)', font: { size: 14 } },
+          ticks: { backdropColor: 'transparent', color: 'rgba(255, 255, 255, 0.5)', min: 0, max: 100, stepSize: 25 }
+        }
+      },
+      plugins: { legend: { display: false } }
+    }
+  });
+  
+  let totalPlayed = 0;
+  labels.forEach(t => totalPlayed += stats[t].max);
+  $("#profile-stats").innerHTML = `総プレイデータ量: ${totalPlayed}`;
+}
+
+function renderFriendsList() {
+  const container = $("#friends-list");
+  if (friends.length === 0) {
+    container.innerHTML = "フレンドがいません";
+    return;
+  }
+  container.innerHTML = friends.map((f, i) => `
+    <div class="flex-row" style="justify-content:space-between; margin-bottom:8px; padding:8px; background:var(--bg-glass); border-radius:8px;">
+      <div>
+        <strong>${esc(f.name)}</strong><br>
+        <span style="font-size:0.75rem; color:var(--text-secondary)">${f.friendCode}</span>
+      </div>
+      <button class="btn btn-primary" style="padding:4px 12px; font-size:0.8rem" onclick="inviteFriend(${i})">招待</button>
+    </div>
+  `).join("");
+}
+
+function inviteFriend(idx) {
+  if (!state.roomCode) { showToast("ルームを作成してから招待してください"); return; }
+  const f = friends[idx];
+  sendMsg({ type: "invite_friend", friendCode: f.friendCode, fromName: account.name, fromAvatar: account.avatar, roomCode: state.roomCode });
+  showToast(`${f.friendCode} に招待を送りました`);
+}
+
+// Global scope for onclick
+window.inviteFriend = inviteFriend;
 
   // Copy code
   $("#btn-copy-code").addEventListener("click", () => {

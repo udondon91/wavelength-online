@@ -10,8 +10,10 @@ const PORT = process.env.PORT || 3000;
 const rawTopics = fs.readFileSync(path.join(__dirname, "topics.json"), "utf-8");
 const TOPICS = JSON.parse(rawTopics);
 
-// --- Room Management ---
+// --- Room & Global Management ---
 const rooms = new Map();
+const globalUsers = new Map(); // userId -> { ws, name, avatar, friendCode, currentRoom }
+const friendCodeToUserId = new Map(); // friendCode -> userId
 
 function generateCode() {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ";
@@ -65,37 +67,47 @@ const wss = new WebSocketServer({ server });
 let nextId = 1;
 
 wss.on("connection", (ws) => {
-  const playerId = "p" + nextId++;
-  ws._playerId = playerId;
+  ws._userId = null;
   ws._roomCode = null;
 
   ws.on("message", (raw) => {
     let msg;
     try { msg = JSON.parse(raw); } catch { return; }
-    handleMessage(ws, playerId, msg);
+    handleMessage(ws, msg);
   });
 
   ws.on("close", () => handleDisconnect(ws, playerId));
 });
 
-function handleMessage(ws, playerId, msg) {
-  switch (msg.type) {
+    case "register": {
+      ws._userId = msg.userId;
+      globalUsers.set(msg.userId, { ws, name: msg.name, avatar: msg.avatar, friendCode: msg.friendCode, currentRoom: null });
+      if (msg.friendCode) friendCodeToUserId.set(msg.friendCode, msg.userId);
+      break;
+    }
+
     case "create_room": {
+      const playerId = ws._userId;
+      if (!playerId) return;
       const code = generateCode();
       const room = {
         code, host: playerId, players: [{ id: playerId, name: msg.name, ws }],
-        phase: "lobby", round: 0, maxRounds: 5, history: [], usedTopics: [], totalScores: {}, chat: [],
-        hinterIndex: 0, mainGuesserIndex: 1,
+        phase: "lobby", round: 0, maxRounds: 2, history: [], usedTopics: [], totalScores: {}, chat: [],
+        hinterIndex: 0, mainGuesserIndex: 1, turn: 0,
         topic: null, target: 0, hint: "", mainGuess: 50, lrGuesses: {}
       };
       room.totalScores[playerId] = 0;
       rooms.set(code, room);
       ws._roomCode = code;
+      const u = globalUsers.get(playerId);
+      if (u) u.currentRoom = code;
       sendTo(ws, { type: "room_created", code, playerId, players: getPlayerList(room), host: room.host });
       break;
     }
 
     case "join_room": {
+      const playerId = ws._userId;
+      if (!playerId) return;
       const code = (msg.code || "").toUpperCase();
       const room = rooms.get(code);
       if (!room) { sendTo(ws, { type: "error", message: "ルームが見つかりません" }); return; }
@@ -105,6 +117,8 @@ function handleMessage(ws, playerId, msg) {
       room.players.push({ id: playerId, name: msg.name, ws });
       room.totalScores[playerId] = 0;
       ws._roomCode = code;
+      const u = globalUsers.get(playerId);
+      if (u) u.currentRoom = code;
 
       sendTo(ws, { type: "room_joined", code, playerId, players: getPlayerList(room), host: room.host });
       broadcast(room, { type: "player_list", players: getPlayerList(room), host: room.host });
@@ -141,6 +155,7 @@ function handleMessage(ws, playerId, msg) {
       broadcast(room, {
         type: "main_guess_phase",
         topic: [room.topic.left, room.topic.right],
+        topicType: room.topic.type,
         difficulty: room.topic.difficulty,
         multiplier: room.topic.multiplier,
         hint: room.hint, 
@@ -168,6 +183,7 @@ function handleMessage(ws, playerId, msg) {
           type: "lr_guess_phase",
           mainGuess: room.mainGuess,
           topic: [room.topic.left, room.topic.right],
+          topicType: room.topic.type,
           difficulty: room.topic.difficulty,
           multiplier: room.topic.multiplier,
           hint: room.hint, 
@@ -227,10 +243,26 @@ function handleMessage(ws, playerId, msg) {
       break;
     }
 
+    case "invite_friend": {
+      const targetId = friendCodeToUserId.get(msg.friendCode);
+      if (targetId) {
+        const targetUser = globalUsers.get(targetId);
+        if (targetUser && targetUser.ws.readyState === 1 && targetUser.currentRoom === null) {
+          sendTo(targetUser.ws, {
+            type: "invite_received",
+            fromName: msg.fromName,
+            fromAvatar: msg.fromAvatar,
+            roomCode: msg.roomCode
+          });
+        }
+      }
+      break;
+    }
+
     case "chat": {
       const room = getRoom(ws);
       if (!room) return;
-      const player = room.players.find(p => p.id === playerId);
+      const player = room.players.find(p => p.id === ws._userId);
       if (player) broadcast(room, { type: "chat_msg", name: player.name, message: msg.message });
       break;
     }
@@ -272,6 +304,7 @@ function startNextRound(room) {
     sendTo(p.ws, {
       type: "hint_phase",
       topic: [room.topic.left, room.topic.right],
+      topicType: room.topic.type,
       difficulty: room.topic.difficulty,
       multiplier: room.topic.multiplier,
       target: p.id === hinter.id ? room.target : null,
@@ -332,6 +365,7 @@ function showRoundResult(room) {
   broadcast(room, {
     type: "round_result", target: room.target, 
     topic: [room.topic.left, room.topic.right], 
+    topicType: room.topic.type,
     difficulty: room.topic.difficulty,
     multiplier: room.topic.multiplier,
     hint: room.hint,
@@ -344,12 +378,19 @@ function showRoundResult(room) {
 }
 
 function handleDisconnect(ws, playerId) {
+  if (playerId) {
+    const u = globalUsers.get(playerId);
+    if (u) {
+      if (u.friendCode) friendCodeToUserId.delete(u.friendCode);
+      globalUsers.delete(playerId);
+    }
+  }
+
   const code = ws._roomCode;
   if (!code) return;
   const room = rooms.get(code);
   if (!room) return;
 
-  const player = room.players.find(p => p.id === playerId);
   room.players = room.players.filter(p => p.id !== playerId);
   ws._roomCode = null;
 
