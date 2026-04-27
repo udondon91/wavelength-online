@@ -606,8 +606,12 @@ function init() {
   });
 
   // Back to lobby / Leave
-  $("#btn-back-lobby").addEventListener("click", () => window.location.href = "/");
+  $("#btn-back-lobby").addEventListener("click", () => {
+    show("screen-lobby");
+    updateLobbyUI();
+  });
   $("#btn-leave-lobby").addEventListener("click", () => window.location.href = "/");
+  $("#btn-leave-final").addEventListener("click", () => window.location.href = "/");
 
   // Topics list modal
   $("#btn-topics").addEventListener("click", async () => {
