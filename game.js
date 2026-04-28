@@ -575,6 +575,7 @@ function generateFriendCode() {
 }
 
 function init() {
+  setupGameEvents();
   if (!account) {
     show("screen-register");
     $("#reg-name").addEventListener("input", (e) => {
@@ -770,6 +771,7 @@ function inviteFriend(idx) {
 // Global scope for onclick
 window.inviteFriend = inviteFriend;
 
+function setupGameEvents() {
   // Copy code
   $("#btn-copy-code").addEventListener("click", () => {
     navigator.clipboard.writeText(state.roomCode).then(() => showToast("📋 コードをコピーしました"));
