@@ -99,6 +99,7 @@ wss.on("connection", (ws) => {
 });
 
 async function handleMessage(ws, msg) {
+  const playerId = ws._userId;
   switch (msg.type) {
     case "register": {
       ws._userId = msg.userId;
@@ -151,7 +152,6 @@ async function handleMessage(ws, msg) {
     }
 
     case "create_room": {
-      const playerId = ws._userId;
       if (!playerId) return;
       const code = generateCode();
       const room = {
@@ -170,7 +170,6 @@ async function handleMessage(ws, msg) {
     }
 
     case "join_room": {
-      const playerId = ws._userId;
       if (!playerId) return;
       const code = (msg.code || "").toUpperCase();
       const room = rooms.get(code);
